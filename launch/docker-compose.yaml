@@ -4,8 +4,6 @@ services:
   zookeeper:
     container_name: mitra-zookeeper
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/zookeeper:${ZOOKEEPER_TAG:-latest}
-    ports:
-      - "2181:2181"
     env_file:
       - ./conf/zk.env
     networks:
@@ -17,19 +15,28 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/kafka:${KAFKA_TAG:-latest}
     depends_on:
       - zookeeper
-    ports:
-      - "29093:29093"
     env_file:
       - ./conf/kafka.env
     networks:
       - core
     restart: always
 
+  pause:
+    container_name: mitra-pause
+    image: busybox
+    depends_on:
+      - broker
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      " sleep 30 "
+    networks:
+      - core
+
   init:
     container_name: mitra-init-${MACHINE_ID:-M001}
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/kafka:${KAFKA_TAG:-latest}
     depends_on:
-      - broker
+      - pause
     entrypoint: [ '/bin/sh', '-c' ]
     command: |
       "
@@ -51,6 +58,9 @@ services:
       - ./conf/common.env
       - ./conf/payload.env
       - ./conf/sasl-auth.env
+      - ./conf/license.env
+    ports:
+      - ${PAYLOAD_PORT}:${PAYLOAD_PORT}
     healthcheck:
       test: wget --no-verbose --tries=1 http://localhost:8080/health || exit 1
       interval: 2s
@@ -66,11 +76,13 @@ services:
     depends_on:
       - init
     env_file:
-      - ./conf/common.env    
+      - ./conf/common.env
       - ./conf/limits.env
       - ./conf/sasl-auth.env
+    ports:
+      - ${LIMITS_PORT}:${LIMITS_PORT}
     healthcheck:
-      test: wget --no-verbose --tries=1 http://localhost:8080/health || exit 1
+      test: wget --no-verbose --tries=1 http://localhost:9090/health || exit 1
       interval: 2s
       timeout: 1s
       retries: 3
@@ -84,14 +96,14 @@ services:
     depends_on:
       - payload
     env_file:
-      - ./conf/common.env    
+      - ./conf/common.env
       - ./conf/alarms.env
     healthcheck:
       test: wget --no-verbose --tries=1 http://localhost:8080/q/health || exit 1
       interval: 2s
       timeout: 1s
       retries: 3
-      start_period: 10s      
+      start_period: 10s
     networks:
       - core
 
@@ -101,14 +113,14 @@ services:
     depends_on:
       - payload
     env_file:
-      - ./conf/common.env    
+      - ./conf/common.env
       - ./conf/alerts.env
     healthcheck:
       test: wget --no-verbose --tries=1 http://localhost:8080/q/health || exit 1
       interval: 2s
       timeout: 1s
       retries: 3
-      start_period: 10s      
+      start_period: 10s
     networks:
       - core
 
@@ -119,14 +131,14 @@ services:
       - alarms
       - alerts
     env_file:
-      - ./conf/common.env    
+      - ./conf/common.env
       - ./conf/merger.env
     healthcheck:
       test: wget --no-verbose --tries=1 http://localhost:8080/q/health || exit 1
       interval: 2s
       timeout: 1s
       retries: 3
-      start_period: 10s      
+      start_period: 10s
     networks:
       - core
 
@@ -136,16 +148,14 @@ services:
     depends_on:
       - merger
     env_file:
-      - ./conf/common.env    
+      - ./conf/common.env
       - ./conf/streamer.env
     healthcheck:
       test: wget --no-verbose --tries=1 http://localhost:8080/q/health || exit 1
       interval: 2s
       timeout: 1s
       retries: 3
-      start_period: 10s      
-    ports:
-      - ${EVENTS_PORT}:${EVENTS_PORT}
+      start_period: 10s
     networks:
       - core
 
@@ -155,12 +165,12 @@ services:
     depends_on:
       - streamer
     env_file:
-      - ./conf/common.env    
+      - ./conf/common.env
       - ./conf/dashboard.env
     ports:
       - ${UI_PORT}:${UI_PORT}
     networks:
-      - core    
+      - core
 
 networks:
   core:
