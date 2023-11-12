@@ -38,17 +38,23 @@ In the figure above, the **Server** is a machine that hosts Docker where Mainten
 
 The following steps brings up the Maintenance Mitra application that is configured with sample limits. The Maintenance Mitra application can be tested with the sample REST client.
 
-1. Clone repository.
+1. Change value of `MTMT_VERSION` to latest [release](https://github.com/nsubrahm/launcher/releases). Run the following commands to download the release.
 
 ```bash
-git clone https://github.com/nsubrahm/launcher
+export MTMT_VERSION=v0.0.0
+curl -L https://github.com/nsubrahm/launcher/releases/download/${MTMT_VERSION}/launcher-main.zip -o launcher-main.zip
+unzip launcher-main.zip
+mv launcher-main launcher
 cd launcher/launch
 ```
 
-2. Log into Container registry. Contact us to obtain value of `CR_PAT`.
+2. Log into Container registry. 
+
+> Contact us to obtain value of `CR_PAT`.
 
 ```bash
-echo $CR_PAT | docker login -u chainhead --password-stdin
+export CR_PAT=
+echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 ```
 
 3. Launch application.
