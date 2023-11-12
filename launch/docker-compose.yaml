@@ -2,41 +2,35 @@ version: '3.5'
 
 services:
   zookeeper:
-    container_name: mitra-zookeeper
+    container_name: ${COMPOSE_PROJECT_NAME}-zookeeper
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/zookeeper:${ZOOKEEPER_TAG:-latest}
     env_file:
       - ./conf/zk.env
-    networks:
-      - core
     restart: always
 
   broker:
-    container_name: mitra-broker
+    container_name: ${COMPOSE_PROJECT_NAME}-broker
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/kafka:${KAFKA_TAG:-latest}
     depends_on:
       - zookeeper
     env_file:
       - ./conf/kafka.env
-    networks:
-      - core
     restart: always
 
   pause:
-    container_name: mitra-pause
+    container_name: ${COMPOSE_PROJECT_NAME}-pause
     image: busybox
     depends_on:
       - broker
     entrypoint: [ '/bin/sh', '-c' ]
     command: |
       " sleep 30 "
-    networks:
-      - core
 
   init:
-    container_name: mitra-init-${MACHINE_ID:-M001}
+    container_name: ${COMPOSE_PROJECT_NAME}-init-${MACHINE_ID:-M001}
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/kafka:${KAFKA_TAG:-latest}
     depends_on:
-      - pause
+      - pause:
     entrypoint: [ '/bin/sh', '-c' ]
     command: |
       "
@@ -44,13 +38,11 @@ services:
       "
     env_file:
       - ./conf/init.env
-    networks:
-      - core
     volumes:
       - ./scripts:/etc/scripts
 
   payload:
-    container_name: mitra-payload-${MACHINE_ID:-M001}
+    container_name: ${COMPOSE_PROJECT_NAME}-payload-${MACHINE_ID:-M001}
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/payload:${PAYLOAD_TAG:-latest}
     depends_on:
       - init
@@ -60,38 +52,34 @@ services:
       - ./conf/sasl-auth.env
       - ./conf/license.env
     ports:
-      - ${PAYLOAD_PORT}:${PAYLOAD_PORT}
+      - ${HOST_PAYLOAD_PORT}:${CONT_PAYLOAD_PORT}
     healthcheck:
       test: wget --no-verbose --tries=1 http://localhost:8080/health || exit 1
       interval: 2s
       timeout: 1s
       retries: 3
       start_period: 10s
-    networks:
-      - core
 
   limits:
-    container_name: mitra-limits-${MACHINE_ID:-M001}
+    container_name: ${COMPOSE_PROJECT_NAME}-limits-${MACHINE_ID:-M001}
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/limits:${LIMITS_TAG:-latest}
     depends_on:
-      - init
+      init
     env_file:
       - ./conf/common.env
       - ./conf/limits.env
       - ./conf/sasl-auth.env
     ports:
-      - ${LIMITS_PORT}:${LIMITS_PORT}
+      - ${HOST_LIMITS_PORT}:${CONT_LIMITS_PORT}
     healthcheck:
-      test: wget --no-verbose --tries=1 http://localhost:9090/health || exit 1
+      test: wget --no-verbose http://localhost:9090/health || exit 1
       interval: 2s
       timeout: 1s
       retries: 3
       start_period: 10s
-    networks:
-      - core
 
   alarms:
-    container_name: mitra-alarms-${MACHINE_ID:-M001}
+    container_name: ${COMPOSE_PROJECT_NAME}-alarms-${MACHINE_ID:-M001}
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alarms:${ALARMS_TAG:-latest}
     depends_on:
       - payload
@@ -99,16 +87,14 @@ services:
       - ./conf/common.env
       - ./conf/alarms.env
     healthcheck:
-      test: wget --no-verbose --tries=1 http://localhost:8080/q/health || exit 1
+      test: /work/health ${HEALTHCHECK_URL}
       interval: 2s
       timeout: 1s
       retries: 3
       start_period: 10s
-    networks:
-      - core
 
   alerts:
-    container_name: mitra-alerts-${MACHINE_ID:-M001}
+    container_name: ${COMPOSE_PROJECT_NAME}-alerts-${MACHINE_ID:-M001}
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
     depends_on:
       - payload
@@ -116,62 +102,54 @@ services:
       - ./conf/common.env
       - ./conf/alerts.env
     healthcheck:
-      test: wget --no-verbose --tries=1 http://localhost:8080/q/health || exit 1
+      test: /work/health ${HEALTHCHECK_URL}
       interval: 2s
       timeout: 1s
       retries: 3
       start_period: 10s
-    networks:
-      - core
 
   merger:
-    container_name: mitra-merger-${MACHINE_ID:-M001}
+    container_name: ${COMPOSE_PROJECT_NAME}-merger-${MACHINE_ID:-M001}
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/merger:${MERGER_TAG:-latest}
     depends_on:
-      - alarms
-      - alerts
+      alarms:
+        condition: service_healthy
+      alerts:
+        condition: service_healthy
     env_file:
       - ./conf/common.env
       - ./conf/merger.env
     healthcheck:
-      test: wget --no-verbose --tries=1 http://localhost:8080/q/health || exit 1
+      test: /work/health ${HEALTHCHECK_URL}
       interval: 2s
       timeout: 1s
       retries: 3
       start_period: 10s
-    networks:
-      - core
 
   streamer:
-    container_name: mitra-streamer-${MACHINE_ID:-M001}
+    container_name: ${COMPOSE_PROJECT_NAME}-streamer-${MACHINE_ID:-M001}
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/streamer:${STREAMER_TAG:-latest}
     depends_on:
-      - merger
+      merger:
+        condition: service_healthy
     env_file:
       - ./conf/common.env
       - ./conf/streamer.env
     healthcheck:
-      test: wget --no-verbose --tries=1 http://localhost:8080/q/health || exit 1
+      test: /work/health ${HEALTHCHECK_URL}
       interval: 2s
       timeout: 1s
       retries: 3
       start_period: 10s
-    networks:
-      - core
 
   dashboard:
-    container_name: mitra-dashboard-${MACHINE_ID:-M001}
+    container_name: ${COMPOSE_PROJECT_NAME}-dashboard-${MACHINE_ID:-M001}
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/dashboard:${DASHBOARD_TAG:-latest}
     depends_on:
-      - streamer
+      streamer:
+        condition: service_healthy
     env_file:
       - ./conf/common.env
       - ./conf/dashboard.env
     ports:
-      - ${UI_PORT}:${UI_PORT}
-    networks:
-      - core
-
-networks:
-  core:
-    name: core
+      - ${HOST_UI_PORT}:${CONT_UI_PORT}

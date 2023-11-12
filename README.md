@@ -5,18 +5,21 @@ Maintenance Mitra is an application to display machine parameters, detect alarm 
 ![Screen-shot](./png/screen-shot.png)
 
 - [Introduction](#introduction)
-  - [Launching](#launching)
+  - [Launch](#launch)
     - [Pre-requisites](#pre-requisites)
     - [Topology](#topology)
     - [Quick Start](#quick-start)
     - [Custom launch](#custom-launch)
   - [Upgrade](#upgrade)
 
-## Launching
+## Launch
 
-The Maintenace Mitra application can be launched either in [Quick Start](#quick-start) or in [Custom Launch](#custom-launch) modes. In **Quick Start**, sample data is published that can be visualized on the dashboard. The **Custom Launch** helps in launching custom payload and dashboard.
+The Maintenace Mitra application can be launched in the following modes.
 
-Both **Quick Start** and **Custom Launch** modes are available for free where, number of invocations are limited upto `3600` requests in a time window of `1 hour` at one go. For unlimited usage, purchase a license as described [here](./docs/license.md).
+1. [Quick Start](#quick-start) - test with sample data using a REST client simulator.
+2. [Custom launch](#custom-launch) - configure multiple parameters before launching.
+
+> Both **Quick Start** and **Custom Launch** modes are available for free where, number of invocations are limited upto `3600` requests in a time window of `1 hour` at one go. For unlimited usage, purchase a license as described [here](./docs/license.md). Customisation charges are applicable for customising dashboard for **Custom Launch**.
 
 ### Pre-requisites
 
@@ -31,19 +34,27 @@ In the figure above, the **Server** is a machine that hosts Docker where Mainten
 
 ### Quick Start
 
-The following steps brings up the Maintenance Mitra application and defines steps to publish limits for raw data as published by a sample REST client.
+> The **Quick Start** mode is available for free where, number of invocations are limited upto `3600` requests in a time window of `1 hour` at one go. For unlimited usage, purchase a license as described [here](./docs/license.md).
 
-1. Clone repository.
+The following steps brings up the Maintenance Mitra application that is configured with sample limits. The Maintenance Mitra application can be tested with the sample REST client.
+
+1. Change value of `MTMT_VERSION` to latest [release](https://github.com/nsubrahm/launcher/releases). Run the following commands to download the release.
 
 ```bash
-git clone https://github.com/nsubrahm/launcher
-cd ${PROJECT_HOME}/launch
+export MTMT_VERSION=v0.0.0
+curl -L https://github.com/nsubrahm/launcher/releases/download/${MTMT_VERSION}/launcher-main.zip -o launcher-main.zip
+unzip launcher-main.zip
+mv launcher-main launcher
+cd launcher/launch
 ```
 
-2. Log into Container registry. Contact us to obtain value of `CR_PAT`.
+2. Log into Container registry. 
+
+> Contact us to obtain value of `CR_PAT`.
 
 ```bash
-echo $CR_PAT | docker login -u chainhead --password-stdin
+export CR_PAT=
+echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 ```
 
 3. Launch application.
@@ -52,7 +63,7 @@ echo $CR_PAT | docker login -u chainhead --password-stdin
 docker compose --env-file launch.env up -d
 ```
 
-4. Create a CSV file named as `limits.csv` with limits as shown below. These limits are defined for parameters published by REST simulator.
+4. Configure the application with sample limits using a CSV file named as `limits.csv` as shown below. These limits are defined for parameters published by REST simulator.
 
 ```csv
 meta.id=8c3aacea-7bf5-4f91-a767-7ad1083a5958,meta.ts=2023-08-15T00:00:00.000,data.key=rpm,data.lo=1000,data.hi=10000
@@ -83,7 +94,15 @@ To stop simulation, run `docker rm simulator-rest`.
 
 The default dashboard can be accessed at [`http://localhost:1881/ui`](http://localhost:1881/ui). To configure port numbers for dashboard, see [Dashboard](#dashboard).
 
+8. To shut down the application, navigate to the `launcher/launch` folder and run the following command.
+
+```bash
+docker compose down
+```
+
 ### Custom launch
+
+> The **Custom Launch** mode is available for free where, number of invocations are limited upto `3600` requests in a time window of `1 hour` at one go. For unlimited usage, purchase a license as described [here](./docs/license.md). Customisation charges are applicable for customising dashboard for **Custom Launch**.
 
 There are three sections of customization.
 
@@ -91,6 +110,12 @@ There are three sections of customization.
 2. [Configure limits](./docs/limits.md).
 3. [Customize dashboard](./docs/dashboard.md).
 
+To shut down the application, navigate to the `launcher/launch` folder and run the following command.
+
+```bash
+docker compose down
+```
+
 ## Upgrade
 
-Both **Quick Start** and **Custom Launch** modes are available for free. By default, this application limits upto `3600` requests in a time window of `1 hour` at one go. For unlimited usage, purchase a license as described [here](./docs/license.md).
+For unlimited usage, purchase a license as described [here](./docs/license.md).
