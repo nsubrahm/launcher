@@ -1,0 +1,45 @@
+version: '3.5'
+
+services:
+  payload:
+    container_name: ${COMPOSE_PROJECT_NAME}-payload-${MACHINE_ID:-M001}
+    image: ${CONTAINER_REPOSITORY}/payload:${PAYLOAD_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/payload.env
+      - ./conf/license.env
+    network_mode: "host"
+    ports:
+      - ${HOST_PAYLOAD_PORT}:${CONT_PAYLOAD_PORT}
+    healthcheck:
+      test: wget --no-verbose --tries=1 http://localhost:8080/health || exit 1
+      interval: 2s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+
+  limits:
+    container_name: ${COMPOSE_PROJECT_NAME}-limits-${MACHINE_ID:-M001}
+    image: ${CONTAINER_REPOSITORY}/limits:${LIMITS_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/limits.env
+    network_mode: "host"
+    ports:
+      - ${HOST_LIMITS_PORT}:${CONT_LIMITS_PORT}
+    healthcheck:
+      test: wget --no-verbose http://localhost:9090/health || exit 1
+      interval: 2s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+
+  dashboard:
+    container_name: ${COMPOSE_PROJECT_NAME}-dashboard-${MACHINE_ID:-M001}
+    image: ${CONTAINER_REPOSITORY}/dashboard:${DASHBOARD_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/dashboard.env
+    network_mode: "host"
+    ports:
+      - ${HOST_UI_PORT}:${CONT_UI_PORT}
