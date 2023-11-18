@@ -9,7 +9,7 @@ services:
       - ./conf/alarms.env
     network_mode: "host"
     healthcheck:
-      test: /work/health ${HEALTHCHECK_ALARMS_URL}
+      test: /work/health
       interval: 2s
       timeout: 1s
       retries: 3
@@ -18,14 +18,12 @@ services:
   alerts:
     container_name: ${COMPOSE_PROJECT_NAME}-alerts-${MACHINE_ID:-M001}
     image: ${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
-    depends_on:
-      - payload
     env_file:
       - ./conf/common.env
       - ./conf/alerts.env
-    network_mode: "host"      
+    network_mode: "host"
     healthcheck:
-      test: /work/health ${HEALTHCHECK_ALERTS_URL}
+      test: /work/health
       interval: 2s
       timeout: 1s
       retries: 3
@@ -44,14 +42,14 @@ services:
       - ./conf/merger.env
     network_mode: "host"
     healthcheck:
-      test: /work/health ${HEALTHCHECK_MERGER_URL}
+      test: /work/health
       interval: 2s
       timeout: 1s
       retries: 3
       start_period: 10s
 
   events:
-    container_name: ${COMPOSE_PROJECT_NAME}-streamer-${MACHINE_ID:-M001}
+    container_name: ${COMPOSE_PROJECT_NAME}-events-${MACHINE_ID:-M001}
     image: ${CONTAINER_REPOSITORY}/streamer:${STREAMER_TAG:-latest}
     depends_on:
       merger:
@@ -61,7 +59,7 @@ services:
       - ./conf/events.env
     network_mode: "host"
     healthcheck:
-      test: /work/health ${HEALTHCHECK_EVENTS_URL}
+      test: /work/health
       interval: 2s
       timeout: 1s
       retries: 3
