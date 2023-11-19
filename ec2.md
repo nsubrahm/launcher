@@ -73,7 +73,7 @@ scp -i mtmt.pem docker-compose-linux-x86_64 ubuntu@${COMPUTE_HOST}:.
 scp -i mtmt.pem v${MTMT_VERSION}.tar.gz ubuntu@${COMPUTE_HOST}:.
 ```
 
-4. `scp` to Registry machine. _Is this required if installation is via PPA?_
+4. `scp` to Registry machine.
 
 ```bash
 scp -i mtmt.pem docker-${DOCKER_VERSION}.tgz ubuntu@${REGISTRY_HOST}:.
@@ -113,7 +113,7 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plug
 sudo usermod -aG docker $USER
 ```
 
-1. Create registry configuration - `$HOME/config.yml`.
+2. Create registry configuration - `$HOME/config.yml`.
 
 ```yaml
 version: 0.1
@@ -327,25 +327,49 @@ docker compose -f compute.yaml --env-file compute.env up -d
 
 ## Frontend installation
 
-The following instructions are to be carried out on a `t3a.nano` instance in a `private` subnet. The `registry` instance can be used as a bastion host.
-
 1. Install Docker using binaries - https://docs.docker.com/engine/install/binaries/
+
+```bash
+export DOCKER_VERSION=24.0.7
+export DOCKER_COMPOSE_VERSION=2.23.0
+export REGISTRY_HOST=172.31.8.51
+echo "export DOCKER_VERSION=24.0.7" >> .profile
+echo "export DOCKER_COMPOSE_VERSION=2.23.0" >> .profile
+echo "export REGISTRY_HOST=172.31.8.51" >> .profile
+tar -zxf docker-${DOCKER_VERSION}.tgz
+sudo cp docker/* /usr/bin/
+```
+
 2. Run Linux post-install steps - https://docs.docker.com/engine/install/linux-postinstall/
+
+```bash
+sudo groupadd docker
+sudo usermod -aG docker $USER
+```
+
 3. Install Docker Compose using binaries - https://docs.docker.com/compose/install/linux/#install-the-plugin-manually
+
+```bash
+DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+mkdir -p $DOCKER_CONFIG/cli-plugins
+mv docker-compose-linux-x86_64 $DOCKER_CONFIG/cli-plugins/docker-compose
+chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+```
+
 4. Run Docker to point to Registry server.
 
 ```bash
 export REGISTRY_HOST=172.31.8.51
 echo "export REGISTRY_HOST=172.31.8.51" >> .profile
-sudo dockerd --registry-server=http://${REGISTRY_HOST}:5000/ &
+sudo dockerd --registry-mirror=http://${REGISTRY_HOST}:5000/ &
 ```
 
 5. Extract launcher.
 
 ```bash
-echo "export MTMT_VERSION=0.0.0" >> .profile
 MTMT_VERSION=0.0.0
-tar -xzf launcher.tar.gz
+echo "export MTMT_VERSION=0.0.0" >> .profile
+tar -xzf v${MTMT_VERSION}.tar.gz
 ```
 
 6. Set Kafka host IP address in `launch/conf/common.env` as shown below.
@@ -357,7 +381,7 @@ MACHINE_ALARMS_TOPIC=m001_alarms
 MACHINE_ALERTS_TOPIC=m001_alerts
 MACHINE_EVENTS_TOPIC=m001_events
 # Quarkus, Kafka
-QUARKUS_KAFKA_STREAMS_BOOTSTRAP_SERVERS=broker-private-ip-address:9092
+QUARKUS_KAFKA_STREAMS_BOOTSTRAP_SERVERS=172.31.21.207:9092
 # General
 TZ="Asia/Kolkata"
 ```
@@ -366,5 +390,5 @@ TZ="Asia/Kolkata"
 
 ```bash
 cd launcher-${MTMT_VERSION}/launch
-docker compose -f front-end.yaml --env-file front-end.env up -d
+docker compose -f frontend.yaml --env-file frontend.env up -d
 ```
