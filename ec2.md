@@ -14,42 +14,50 @@ This document installs the Maintenance Mitra application on Amazon EC2 (**Ubuntu
 
 - 5 EC2 instances will be launched as described below.
 
-| Application                            | Instance type | Instance name |  Subnet   | Description                                                                |
-| -------------------------------------- | :-----------: | :-----------: | :-------: | -------------------------------------------------------------------------- |
-| `payload`, `limits`, `dashboard`       |  `t3a.micro`  |   Frontend    | `public`  | Exposes endpoint for devices, CLI and dashboard.                           |
-| `kafka`                                |  `t3a.small`  |    Broker     | `private` | Broker installation.                                                       |
-| `alarms`, `alerts`, `merger`, `events` |  `t3a.micro`  |    Compute    | `private` | Run Quarkus applications.                                                  |
-| `registry`                             |  `t3a.nano`   |   Registry    | `public`  | Container registry proxy to `ghcr` since Compute runs in `private` subnet. |
-| `bastion`                              |  `t3a.nano`   |    Bastion    | `public`  | Bastion host.                                                              |
+| Application                            | Instance type | Instance name |  Subnet   | Description                                      |
+| -------------------------------------- | :-----------: | :-----------: | :-------: | ------------------------------------------------ |
+| `payload`, `limits`, `dashboard`       |  `t3a.micro`  |   Frontend    | `public`  | Exposes endpoint for devices, CLI and dashboard. |
+| `kafka`                                |  `t3a.small`  |    Broker     | `private` | Broker installation.                             |
+| `alarms`, `alerts`, `merger`, `events` |  `t3a.micro`  |    Compute    | `private` | Run Quarkus applications.                        |
+| `registry`                             |  `t3a.nano`   |   Registry    | `public`  | Container registry proxy to `ghcr`.              |
+| `bastion`                              |  `t3a.nano`   |    Bastion    | `public`  | Bastion host.                                    |
 
 ## Bastion host
 
 Launch a `t3a.nano` instance in `public` subnet to run commands on instances launched in `private` subnet.
 
-1. Download Java, Kafka, Docker Engine and Docker Compose.
+1. Set-up environment variables for other machines.
 
 ```bash
+export BROKER_HOST=172.31.21.207
+export COMPUTE_HOST=172.31.28.90
+export REGISTRY_HOST=172.31.8.51
+export FRONTEND_HOST=172.31.5.103
+echo "export BROKER_HOST=172.31.21.207" >> .profile
+echo "export COMPUTE_HOST=172.31.28.90" >> .profile
+echo "export REGISTRY_HOST=172.31.8.51" >> .profile
+echo "export FRONTEND_HOST=172.31.5.103" >> .profile
+```
+
+2. Download Java, Kafka, Docker Engine and Docker Compose.
+
+```bash
+# Machine update
 sudo apt-get update
+# Software versions
 export JDK_VERSION=21.0.1
 export DOCKER_VERSION=24.0.7
 export DOCKER_COMPOSE_VERSION=2.23.0
 export KAFKA_BIN_RELEASE=2.13
 export KAFKA_RELEASE=3.6.0
 export MTMT_VERSION=0.0.0
-export BROKER_HOST=172.31.21.207
-export COMPUTE_HOST=172.31.28.90
-export REGISTRY_HOST=172.31.8.51
-export FRONTEND_HOST=172.31.5.103
 echo "export JDK_VERSION=21.01.1" >> .profile
 echo "export DOCKER_VERSION=24.0.7" >> .profile
 echo "export DOCKER_COMPOSE_VERSION=2.23.0" >> .profile
 echo "export KAFKA_BIN_RELEASE=2.13" >> .profile
 echo "export KAFKA_RELEASE=3.6.0" >> .profile
 echo "export MTMT_VERSION=0.0.0" >> .profile
-echo "export BROKER_HOST=172.31.21.207" >> .profile
-echo "export COMPUTE_HOST=172.31.28.90" >> .profile
-echo "export REGISTRY_HOST=172.31.8.51" >> .profile
-echo "export FRONTEND_HOST=172.31.5.103" >> .profile
+# Download
 wget https://dlcdn.apache.org/kafka/${KAFKA_RELEASE}/kafka_${KAFKA_BIN_RELEASE}-${KAFKA_RELEASE}.tgz
 wget https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz
 wget https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launch.tar.gz
@@ -57,7 +65,7 @@ wget https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERS
 wget https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64 
 ```
 
-2. `scp` to Broker machine.
+3. `scp` to Broker machine.
 
 ```bash
 scp -i mtmt.pem kafka_${KAFKA_BIN_RELEASE}-${KAFKA_RELEASE}.tgz ubuntu@${BROKER_HOST}:.
@@ -65,7 +73,7 @@ scp -i mtmt.pem openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz ubuntu@${BROKER_HOST
 scp -i mtmt.pem launch.tar.gz ubuntu@${BROKER_HOST}:.
 ```
 
-3. `scp` to Compute machine.
+4. `scp` to Compute machine.
 
 ```bash
 scp -i mtmt.pem docker-${DOCKER_VERSION}.tgz ubuntu@${COMPUTE_HOST}:.
@@ -73,15 +81,13 @@ scp -i mtmt.pem docker-compose-linux-x86_64 ubuntu@${COMPUTE_HOST}:.
 scp -i mtmt.pem launch.tar.gz ubuntu@${COMPUTE_HOST}:.
 ```
 
-4. `scp` to Registry machine.
+5. `scp` to Registry machine.
 
 ```bash
-scp -i mtmt.pem docker-${DOCKER_VERSION}.tgz ubuntu@${REGISTRY_HOST}:.
-scp -i mtmt.pem docker-compose-linux-x86_64 ubuntu@${REGISTRY_HOST}:.
 scp -i mtmt.pem launch/registry/registry.yml ubuntu@${REGISTRY_HOST}:.
 ```
 
-5. `scp` to Frontend machine.
+6. `scp` to Frontend machine.
 
 ```bash
 scp -i mtmt.pem docker-${DOCKER_VERSION}.tgz ubuntu@${FRONTEND_HOST}:.
@@ -150,7 +156,7 @@ docker run -d --restart=always -p 5000:5000 --name docker-registry-proxy -v `pwd
 
 The following instructions are to be carried out on a `t3a.small` instance in a `private` subnet. The instructions are from [here](https://kafka.apache.org/quickstart) and [here](https://stackoverflow.com/a/39901893/919480).
 
-1. Install Java
+1. Install Java.
 
 ```bash
 export JDK_VERSION=21.0.1
@@ -246,10 +252,6 @@ sudo service kafka start
 5. Create topics.
 
 ```bash
-export MTMT_VERSION=0.0.0
-export KAFKA_HOST=172.31.21.207
-echo "export KAFKA_HOST=private-ip-address" >> .profile
-echo "export MTMT_VERSION=0.0.0" >> .profile
 tar -xzf launch.tar.gz
 cd launch/scripts
 ./init.sh
@@ -291,8 +293,6 @@ chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 4. Run Docker to point to Registry server.
 
 ```bash
-export REGISTRY_HOST=172.31.8.51
-echo "export REGISTRY_HOST=172.31.8.51" >> .profile
 sudo dockerd --registry-mirror=http://${REGISTRY_HOST}:5000/ &
 ```
 
@@ -357,8 +357,6 @@ chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 4. Run Docker to point to Registry server.
 
 ```bash
-export REGISTRY_HOST=172.31.8.51
-echo "export REGISTRY_HOST=172.31.8.51" >> .profile
 sudo dockerd --registry-mirror=http://${REGISTRY_HOST}:5000/ &
 ```
 
