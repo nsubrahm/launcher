@@ -39,7 +39,7 @@ export MTMT_VERSION=0.0.0
 export BROKER_HOST=172.31.21.207
 export COMPUTE_HOST=172.31.28.90
 export REGISTRY_HOST=172.31.8.51
-export FRONTEND_HOST=
+export FRONTEND_HOST=172.31.5.103
 echo "export JDK_VERSION=21.01.1" >> .profile
 echo "export DOCKER_VERSION=24.0.7" >> .profile
 echo "export DOCKER_COMPOSE_VERSION=2.23.0" >> .profile
@@ -49,10 +49,10 @@ echo "export MTMT_VERSION=0.0.0" >> .profile
 echo "export BROKER_HOST=172.31.21.207" >> .profile
 echo "export COMPUTE_HOST=172.31.28.90" >> .profile
 echo "export REGISTRY_HOST=172.31.8.51" >> .profile
-echo "export FRONTEND_HOST=" >> .profile
+echo "export FRONTEND_HOST=172.31.5.103" >> .profile
 wget https://dlcdn.apache.org/kafka/${KAFKA_RELEASE}/kafka_${KAFKA_BIN_RELEASE}-${KAFKA_RELEASE}.tgz
 wget https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz
-wget https://github.com/nsubrahm/launcher/archive/refs/tags/v${MTMT_VERSION}.tar.gz
+wget https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launch.tar.gz
 wget https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz
 wget https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64 
 ```
@@ -62,7 +62,7 @@ wget https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSI
 ```bash
 scp -i mtmt.pem kafka_${KAFKA_BIN_RELEASE}-${KAFKA_RELEASE}.tgz ubuntu@${BROKER_HOST}:.
 scp -i mtmt.pem openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz ubuntu@${BROKER_HOST}:.
-scp -i mtmt.pem v${MTMT_VERSION}.tar.gz ubuntu@${BROKER_HOST}:.
+scp -i mtmt.pem launch.tar.gz ubuntu@${BROKER_HOST}:.
 ```
 
 3. `scp` to Compute machine.
@@ -70,7 +70,7 @@ scp -i mtmt.pem v${MTMT_VERSION}.tar.gz ubuntu@${BROKER_HOST}:.
 ```bash
 scp -i mtmt.pem docker-${DOCKER_VERSION}.tgz ubuntu@${COMPUTE_HOST}:.
 scp -i mtmt.pem docker-compose-linux-x86_64 ubuntu@${COMPUTE_HOST}:.
-scp -i mtmt.pem v${MTMT_VERSION}.tar.gz ubuntu@${COMPUTE_HOST}:.
+scp -i mtmt.pem launch.tar.gz ubuntu@${COMPUTE_HOST}:.
 ```
 
 4. `scp` to Registry machine.
@@ -86,7 +86,7 @@ scp -i mtmt.pem launch/registry/registry.yml ubuntu@${REGISTRY_HOST}:.
 ```bash
 scp -i mtmt.pem docker-${DOCKER_VERSION}.tgz ubuntu@${FRONTEND_HOST}:.
 scp -i mtmt.pem docker-compose-linux-x86_64 ubuntu@${FRONTEND_HOST}:.
-scp -i mtmt.pem v${MTMT_VERSION}.tar.gz ubuntu@${FRONTEND_HOST}:.
+scp -i mtmt.pem launch.tar.gz ubuntu@${FRONTEND_HOST}:.
 ```
 
 ## Registry installation
@@ -250,8 +250,8 @@ export MTMT_VERSION=0.0.0
 export KAFKA_HOST=172.31.21.207
 echo "export KAFKA_HOST=private-ip-address" >> .profile
 echo "export MTMT_VERSION=0.0.0" >> .profile
-tar -xzf v${MTMT_VERSION}.tar.gz
-cd launcher-${MTMT_VERSION}/launch/scripts
+tar -xzf launch.tar.gz
+cd launch/scripts
 ./init.sh
 ```
 
@@ -299,9 +299,7 @@ sudo dockerd --registry-mirror=http://${REGISTRY_HOST}:5000/ &
 5. Extract launcher.
 
 ```bash
-MTMT_VERSION=0.0.0
-echo "export MTMT_VERSION=0.0.0" >> .profile
-tar -xzf v${MTMT_VERSION}.tar.gz
+tar -xzf launch.tar.gz
 ```
 
 6. Set Kafka host IP address in `launch/conf/common.env` as shown below.
@@ -321,7 +319,7 @@ TZ="Asia/Kolkata"
 7. Launch applications.
 
 ```bash
-cd launcher-${MTMT_VERSION}/launch
+cd launch
 docker compose -f compute.yaml --env-file compute.env up -d
 ```
 
@@ -367,9 +365,7 @@ sudo dockerd --registry-mirror=http://${REGISTRY_HOST}:5000/ &
 5. Extract launcher.
 
 ```bash
-MTMT_VERSION=0.0.0
-echo "export MTMT_VERSION=0.0.0" >> .profile
-tar -xzf v${MTMT_VERSION}.tar.gz
+tar -xzf launch.tar.gz
 ```
 
 6. Set Kafka host IP address in `launch/conf/common.env` as shown below.
@@ -389,6 +385,6 @@ TZ="Asia/Kolkata"
 7. Launch applications.
 
 ```bash
-cd launcher-${MTMT_VERSION}/launch
+cd launch
 docker compose -f frontend.yaml --env-file frontend.env up -d
 ```
