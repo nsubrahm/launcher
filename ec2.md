@@ -12,6 +12,8 @@ This document installs the Maintenance Mitra application on Amazon EC2 (**Ubuntu
 
 ## Architecture diagram
 
+![Architecture diagram](./png/arch-ec2.png)
+
 - 5 EC2 instances will be launched as described below.
 
 | Application                            | Instance type | Instance name |  Subnet   | Description                                      |
@@ -24,7 +26,7 @@ This document installs the Maintenance Mitra application on Amazon EC2 (**Ubuntu
 
 ## Bastion host
 
-Launch a `t3a.nano` instance in `public` subnet to run commands on instances launched in `private` subnet.
+Launch a `t3a.nano` instance in `public` subnet to run commands on instances launched in `private` subnet. Copy the PEM file to this machine.
 
 1. Set-up environment variables for other machines.
 
@@ -57,42 +59,47 @@ echo "export DOCKER_COMPOSE_VERSION=2.23.0" >> .profile
 echo "export KAFKA_BIN_RELEASE=2.13" >> .profile
 echo "export KAFKA_RELEASE=3.6.0" >> .profile
 echo "export MTMT_VERSION=0.0.0" >> .profile
+# SSH key name
+export KEY_NAME=mtmt
+echo "export KEY_NAME=mtmt" >> .profile
 # Download
 wget https://dlcdn.apache.org/kafka/${KAFKA_RELEASE}/kafka_${KAFKA_BIN_RELEASE}-${KAFKA_RELEASE}.tgz
 wget https://download.java.net/java/GA/jdk21.0.1/415e3f918a1f4062a0074a2794853d0d/12/GPL/openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz
-wget https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launch.tar.gz
+wget https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher.tar.gz
 wget https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz
 wget https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64 
+# Unpack launcher
+tar -xzf launcher.tar.gz
 ```
 
 3. `scp` to Broker machine.
 
 ```bash
-scp -i mtmt.pem kafka_${KAFKA_BIN_RELEASE}-${KAFKA_RELEASE}.tgz ubuntu@${BROKER_HOST}:.
-scp -i mtmt.pem openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz ubuntu@${BROKER_HOST}:.
-scp -i mtmt.pem launch.tar.gz ubuntu@${BROKER_HOST}:.
+scp -i ${KEY_NAME}.pem kafka_${KAFKA_BIN_RELEASE}-${KAFKA_RELEASE}.tgz ubuntu@${BROKER_HOST}:.
+scp -i ${KEY_NAME}.pem openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz ubuntu@${BROKER_HOST}:.
+scp -i ${KEY_NAME}.pem launcher.tar.gz ubuntu@${BROKER_HOST}:.
 ```
 
 4. `scp` to Compute machine.
 
 ```bash
-scp -i mtmt.pem docker-${DOCKER_VERSION}.tgz ubuntu@${COMPUTE_HOST}:.
-scp -i mtmt.pem docker-compose-linux-x86_64 ubuntu@${COMPUTE_HOST}:.
-scp -i mtmt.pem launch.tar.gz ubuntu@${COMPUTE_HOST}:.
+scp -i ${KEY_NAME}.pem docker-${DOCKER_VERSION}.tgz ubuntu@${COMPUTE_HOST}:.
+scp -i ${KEY_NAME}.pem docker-compose-linux-x86_64 ubuntu@${COMPUTE_HOST}:.
+scp -i ${KEY_NAME}.pem launcher.tar.gz ubuntu@${COMPUTE_HOST}:.
 ```
 
 5. `scp` to Registry machine.
 
 ```bash
-scp -i mtmt.pem launch/registry/registry.yml ubuntu@${REGISTRY_HOST}:.
+scp -i ${KEY_NAME}.pem launch/registry/registry.yml ubuntu@${REGISTRY_HOST}:.
 ```
 
 6. `scp` to Frontend machine.
 
 ```bash
-scp -i mtmt.pem docker-${DOCKER_VERSION}.tgz ubuntu@${FRONTEND_HOST}:.
-scp -i mtmt.pem docker-compose-linux-x86_64 ubuntu@${FRONTEND_HOST}:.
-scp -i mtmt.pem launch.tar.gz ubuntu@${FRONTEND_HOST}:.
+scp -i ${KEY_NAME}.pem docker-${DOCKER_VERSION}.tgz ubuntu@${FRONTEND_HOST}:.
+scp -i ${KEY_NAME}.pem docker-compose-linux-x86_64 ubuntu@${FRONTEND_HOST}:.
+scp -i ${KEY_NAME}.pem launcher.tar.gz ubuntu@${FRONTEND_HOST}:.
 ```
 
 ## Registry installation
@@ -146,7 +153,7 @@ health:
     threshold: 3
 ```
 
-3. Launch registry.
+3. Log out and log in back to this machine. Launch registry.
 
 ```bash
 docker run -d --restart=always -p 5000:5000 --name docker-registry-proxy -v `pwd`/config.yml:/etc/docker/registry/config.yml registry:2
@@ -252,7 +259,7 @@ sudo service kafka start
 5. Create topics.
 
 ```bash
-tar -xzf launch.tar.gz
+tar -xzf launcher.tar.gz
 cd launch/scripts
 ./init.sh
 ```
@@ -299,7 +306,7 @@ sudo dockerd --registry-mirror=http://${REGISTRY_HOST}:5000/ &
 5. Extract launcher.
 
 ```bash
-tar -xzf launch.tar.gz
+tar -xzf launcher.tar.gz
 ```
 
 6. Set Kafka host IP address in `launch/conf/common.env` as shown below.
@@ -363,7 +370,7 @@ sudo dockerd --registry-mirror=http://${REGISTRY_HOST}:5000/ &
 5. Extract launcher.
 
 ```bash
-tar -xzf launch.tar.gz
+tar -xzf launcher.tar.gz
 ```
 
 6. Set Kafka host IP address in `launch/conf/common.env` as shown below.
