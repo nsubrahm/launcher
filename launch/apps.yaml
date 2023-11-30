@@ -1,0 +1,103 @@
+version: '3.5'
+
+services:
+  alarms:
+    container_name: ${COMPOSE_PROJECT_NAME}-alarms
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alarms:${ALARMS_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/alarms.env
+    network_mode: "host"
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+
+  alerts:
+    container_name: ${COMPOSE_PROJECT_NAME}-alerts
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/alerts.env
+    network_mode: "host"
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+
+  merger:
+    container_name: ${COMPOSE_PROJECT_NAME}-merger
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/merger:${MERGER_TAG:-latest}
+    depends_on:
+      alarms:
+        condition: service_healthy
+      alerts:
+        condition: service_healthy
+    env_file:
+      - ./conf/common.env
+      - ./conf/merger.env
+    network_mode: "host"
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+
+  events:
+    container_name: ${COMPOSE_PROJECT_NAME}-events
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/streamer:${STREAMER_TAG:-latest}
+    depends_on:
+      merger:
+        condition: service_healthy
+    env_file:
+      - ./conf/common.env
+      - ./conf/events.env
+    network_mode: "host"
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+
+  payload:
+    container_name: ${COMPOSE_PROJECT_NAME}-payload
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/payload:${PAYLOAD_TAG:-latest}
+    depends_on:
+      alarms:
+        condition: service_healthy
+      alerts:
+        condition: service_healthy
+      merger:
+        condition: service_healthy
+    env_file:
+      - ./conf/common.env
+      - ./conf/payload.env
+      - ./conf/license.env
+    network_mode: "host"
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+
+  limits:
+    container_name: ${COMPOSE_PROJECT_NAME}-limits
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/limits:${LIMITS_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/limits.env
+    network_mode: "host"
+
+  dashboard:
+    container_name: ${COMPOSE_PROJECT_NAME}-dashboard
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/dashboard:${DASHBOARD_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/dashboard.env

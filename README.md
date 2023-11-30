@@ -5,117 +5,46 @@ Maintenance Mitra is an application to display machine parameters, detect alarm 
 ![Screen-shot](./png/screen-shot.png)
 
 - [Introduction](#introduction)
-  - [Launch](#launch)
+  - [On-premise installation](#on-premise-installation)
     - [Pre-requisites](#pre-requisites)
-    - [Topology](#topology)
-    - [Quick Start](#quick-start)
-    - [Custom launch](#custom-launch)
-  - [Upgrade](#upgrade)
+    - [Install instructions](#install-instructions)
+  - [EC2 installation](#ec2-installation)
+    - [Pre-requisites](#pre-requisites-1)
+    - [Install instructions](#install-instructions-1)
 
-## Launch
+This repository documents installation of Maintenance Mitra on two targets - on-premise or AWS EC2.
 
-The Maintenace Mitra application can be launched in the following modes.
+## On-premise installation
 
-1. [Quick Start](#quick-start) - test with sample data using a REST client simulator.
-2. [Custom launch](#custom-launch) - configure multiple parameters before launching.
+The diagram below shows the topology to install Maintenance Mitra application on the on-premises server.
 
-> Both **Quick Start** and **Custom Launch** modes are available for free where, number of invocations are limited upto `3600` requests in a time window of `1 hour` at one go. For unlimited usage, purchase a license as described [here](./docs/license.md). Customisation charges are applicable for customising dashboard for **Custom Launch**.
+![on-premise](png/on-premise.png)
 
 ### Pre-requisites
 
-- Docker should be running with at least 1 core CPU and 2 GiB RAM allocated.
+The pre-requisites for installation are as follows:
 
-### Topology
+1. A 64-bit Windows or a Linux server with minimum 1 core CPU and 4GB RAM to spare.
+2. Docker and Docker Compose are pre-installed.
+3. Internet connection should be available for the duration of installation (typically, 15 mins).
 
-![Image](./png/maintenance-mitra-topology-light.png#gh-light-mode-only)
-![Image](./png/maintenance-mitra-topology-dark.png#gh-dark-mode-only)
+### Install instructions
 
-In the figure above, the **Server** is a machine that hosts Docker where Maintenance Mitra will run. The **Equipment** will publish data and **Console** will display the dashboard of parameters, alarm conditions and duration in near real-time.
+See [here](./on-premise.md) for install instructions on on-premise machine.
 
-### Quick Start
+## EC2 installation
 
-> The **Quick Start** mode is available for free where, number of invocations are limited upto `3600` requests in a time window of `1 hour` at one go. For unlimited usage, purchase a license as described [here](./docs/license.md).
+The diagram below shows the topology to install Maintenance Mitra application on the on-premises server.
 
-The following steps brings up the Maintenance Mitra application that is configured with sample limits. The Maintenance Mitra application can be tested with the sample REST client.
+![ec2](png/ec2.png)
 
-1. Change value of `MTMT_VERSION` to latest [release](https://github.com/nsubrahm/launcher/releases). Run the following commands to download the release.
+### Pre-requisites
 
-```bash
-export MTMT_VERSION=v0.0.0
-curl -L https://github.com/nsubrahm/launcher/releases/download/${MTMT_VERSION}/launcher-main.zip -o launcher-main.zip
-unzip launcher-main.zip
-mv launcher-main launcher
-cd launcher/launch
-```
+The pre-requisites for installation are as follows:
 
-2. Log into Container registry. 
+1. `t2.small` instance.
+2. Port numbers `8080` and `8081` opened for payload and UI respectively.
 
-> Contact us to obtain value of `CR_PAT`.
+### Install instructions
 
-```bash
-export CR_PAT=
-echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
-```
-
-3. Launch application.
-
-```bash
-docker compose --env-file launch.env up -d
-```
-
-4. Configure the application with sample limits using a CSV file named as `limits.csv` as shown below. These limits are defined for parameters published by REST simulator.
-
-```csv
-meta.id=8c3aacea-7bf5-4f91-a767-7ad1083a5958,meta.ts=2023-08-15T00:00:00.000,data.key=rpm,data.lo=1000,data.hi=10000
-meta.id=1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed,meta.ts=2023-08-15T00:00:00.000,data.key=temperature,data.lo=20,data.hi=60
-meta.id=74058447-87a1-4a17-8023-54ad56067ac1,meta.ts=2023-08-15T00:00:00.000,data.key=current,data.lo=100,data.hi=1000
-meta.id=74058447-87a1-4a17-8023-54ad56067ac1,meta.ts=2023-08-15T00:00:00.000,data.key=vibration,data.lo=-10,data.hi=10
-meta.id=74058447-87a1-4a17-8023-54ad56067ac1,meta.ts=2023-08-15T00:00:00.000,data.key=voltage,data.lo=100,data.hi=1000
-```
-
-5. Run the following command to configure limits in bulk.
-
-```bash
-curl -X POST http://127.0.0.1:9090/bulk -H "Content-Type: text/plain" --data-file "@limits.csv"
-```
-
-6. Publish sample data to `/data` end-point.
-
-```bash
-docker run --name simulator-rest -e FREQUENCY=100 -e BASE_URL="http://127.0.0.1:8080" -e API_ENDPOINT="/data" -e TZ="Asia/Kolkata" ghcr.io/nsubrahm/simulator-rest:latest
-```
-
-- `FREQUENCY` is the rate, in miliseconds, at which payload is to be published.
-- Other environment variables need not be changed when running in Quick Start mode.
-
-To stop simulation, run `docker rm simulator-rest`.
-
-7. Access dashboard.
-
-The default dashboard can be accessed at [`http://localhost:1881/ui`](http://localhost:1881/ui). To configure port numbers for dashboard, see [Dashboard](#dashboard).
-
-8. To shut down the application, navigate to the `launcher/launch` folder and run the following command.
-
-```bash
-docker compose down
-```
-
-### Custom launch
-
-> The **Custom Launch** mode is available for free where, number of invocations are limited upto `3600` requests in a time window of `1 hour` at one go. For unlimited usage, purchase a license as described [here](./docs/license.md). Customisation charges are applicable for customising dashboard for **Custom Launch**.
-
-There are three sections of customization.
-
-1. [Publish payload](./docs/payload.md).
-2. [Configure limits](./docs/limits.md).
-3. [Customize dashboard](./docs/dashboard.md).
-
-To shut down the application, navigate to the `launcher/launch` folder and run the following command.
-
-```bash
-docker compose down
-```
-
-## Upgrade
-
-For unlimited usage, purchase a license as described [here](./docs/license.md).
+See [here](./ec2.md) for install instructions on EC2 machine.
