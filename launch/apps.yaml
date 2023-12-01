@@ -101,3 +101,4 @@ services:
     env_file:
       - ./conf/common.env
       - ./conf/dashboard.env
+    network_mode: "host"

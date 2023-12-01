@@ -165,10 +165,9 @@ docker compose -f apps.yaml --env-file apps.env up -d
 
 12. Check.
 
-The following command should list the `alarms`, `alerts`, `merger` and `events` applications launched and in healthy status. 
+Run `docker ps` to list the running pplications launched and in healthy status. 
 
 ```bash
-docker ps
 ```
 
 13. _(Optional)_ Shut down applications.

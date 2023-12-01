@@ -42,8 +42,12 @@ The diagram below shows the topology to install Maintenance Mitra application on
 
 The pre-requisites for installation are as follows:
 
-1. `t2.small` instance.
-2. Port numbers `8080` and `8081` opened for payload and UI respectively.
+1. `t3a.medium` instance.
+2. Following ports should be opened. It is _strongly recommended_ that the source is limited to certain IP addresses than opening to "world".
+  1. `22` for `ssh`
+  2. `8080` for UI
+  3. `8081` for Payload
+  4. `8082` for Limits
 
 ### Install instructions
 
