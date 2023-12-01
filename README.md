@@ -30,7 +30,7 @@ The pre-requisites for installation are as follows:
 
 ### Install instructions
 
-See [here](./on-premise.md) for install instructions on on-premise machine.
+See [here](docs/on-premises.md) for install instructions on on-premise machine.
 
 ## EC2 installation
 
@@ -47,4 +47,4 @@ The pre-requisites for installation are as follows:
 
 ### Install instructions
 
-See [here](./ec2.md) for install instructions on EC2 machine.
+See [here](docs/ec2.md) for install instructions on EC2 machine.
