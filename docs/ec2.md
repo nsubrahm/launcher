@@ -6,24 +6,15 @@ This page documents steps to install the application on EC2 instance.
   - [Initialize](#initialize)
   - [Install Docker](#install-docker)
   - [Login to GHCR](#login-to-ghcr)
-  - [Install Java](#install-java)
-  - [Install Kafka as a service](#install-kafka-as-a-service)
-  - [Install application](#install-application)
+  - [Install](#install)
 
 ## Initialize
 
 1. Set-up environment variables and initialize.
 
 ```bash
-export KAFKA_BIN_RELEASE=2.13
-export KAFKA_RELEASE=3.6.0
-export KAFKA_HOME=/opt/kafka
 export MTMT_VERSION=0.0.0
-echo "export KAFKA_BIN_RELEASE=2.13" >> .profile
-echo "export KAFKA_RELEASE=3.6.0" >> .profile
-echo "export KAFKA_HOME=/opt/kafka" >> .profile
 echo "export MTMT_VERSION=0.0.0" >> .profile
-sudo apt-get update
 ```
 
 ## Install Docker
@@ -49,97 +40,18 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plug
 sudo usermod -aG docker $USER
 ```
 
-3. Log out and log in again to the EC2 instance.
-
 ## Login to GHCR
 
-4. Log in to `ghcr.io` container registry.
+3. Log in to `ghcr.io` container registry.
 
 ```bash
 export CR_PAT=
 echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 ```
 
-## Install Java
+## Install
 
-5. Install Java.
-
-```bash
-sudo apt-get install -y openjdk-19-jre-headless
-```
-
-## Install Kafka as a service
-
-6. Install Kafka.
-
-```bash
-wget https://dlcdn.apache.org/kafka/${KAFKA_RELEASE}/kafka_${KAFKA_BIN_RELEASE}-${KAFKA_RELEASE}.tgz
-tar -zxvf kafka_${KAFKA_BIN_RELEASE}-${KAFKA_RELEASE}.tgz
-sudo cp -R ~/kafka_${KAFKA_BIN_RELEASE}-${KAFKA_RELEASE} /opt
-sudo ln -s /opt/kafka_${KAFKA_BIN_RELEASE}-${KAFKA_RELEASE} /opt/kafka
-```
-
-7. Copy the following to `/etc/init.d/kafka` to set-up Kafka service.
-
-```bash
-#!/bin/bash
-KAFKA_HOME=/opt/kafka
-# See how we were called.
-case "$1" in
-  start)
-        # Start daemon.
-        echo "Generate cluster UUID"
-        KAFKA_CLUSTER_ID="$(${KAFKA_HOME}/bin/kafka-storage.sh random-uuid)"
-        echo "Format log directories"
-        ${KAFKA_HOME}/bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c ${KAFKA_HOME}/config/kraft/server.properties
-        echo "Start Kafka server"
-        ${KAFKA_HOME}/bin/kafka-server-start.sh -daemon ${KAFKA_HOME}/config/kraft/server.properties
-        ;;
-  stop)
-        # Stop daemons.
-        echo "Shutting down Kafka";
-        pid=`ps ax | grep -i 'kafka.Kafka' | grep -v grep | awk '{print $1}'`
-        if [ -n "$pid" ]
-          then
-          kill -9 $pid
-        else
-          echo "Kafka was not Running"
-        fi
-        ;;
-  restart)
-        $0 stop
-        sleep 2
-        $0 start
-        ;;
-  status)
-        pid=`ps ax | grep -i 'kafka.Kafka' | grep -v grep | awk '{print $1}'`
-        if [ -n "$pid" ]
-          then
-          echo "Kafka is Running as PID: $pid"
-        else
-          echo "Kafka is not Running"
-        fi
-        ;;
-  *)
-        echo "Usage: $0 {start|stop|restart|status}"
-        exit 1
-esac
-
-exit 0
-```
-
-8. Change permissions and launch Kafka service.
-
-```bash
-sudo chmod 755 /etc/init.d/kafka
-sudo update-rc.d kafka defaults
-sudo service kafka start
-sudo service kafka status
-```
-
-## Install application
-
-9. Download and unzip application archive.
+4. Download and unzip application archive.
 
 ```bash
 cd $HOME
@@ -149,32 +61,37 @@ export PROJECT_HOME=$HOME/launch
 echo "export PROJECT_HOME=$HOME/launch" >> .profile
 ```
 
-10. Create topics on Kafka broker.
-
-```bash
-cd ${PROJECT_HOME}/scripts
-./init.sh
-```
-
-11. Launch applications.
+5.  Launch platform.
 
 ```bash
 cd ${PROJECT_HOME}
-docker compose -f apps.yaml --env-file apps.env up -d
+docker compose -f platform.yaml --env-file project.env up -d
 ```
 
-12. Check.
-
-Run `docker ps` to list the running pplications launched and in healthy status. 
+6. Launch applications.
 
 ```bash
+cd ${PROJECT_HOME}
+docker compose -f apps.yaml --env-file project.env up -d
 ```
 
-13. _(Optional)_ Shut down applications.
+7. Check running containers with `docker ps`.
+
+```bash
+CONTAINER ID   IMAGE                                COMMAND                  CREATED          STATUS                    PORTS                              NAMES
+1ce3f646b56f   ghcr.io/nsubrahm/dashboard:latest    "./entrypoint.sh"        17 minutes ago   Up 17 minutes (healthy)   1880/tcp, 0.0.0.0:8080->8080/tcp   mitra-m001-output
+e6a3fbc5847f   ghcr.io/nsubrahm/payload:latest      "./application"          17 minutes ago   Up 17 minutes (healthy)   8080/tcp, 0.0.0.0:8081->8081/tcp   mitra-m001-inputs
+4ce2110a7edb   ghcr.io/nsubrahm/streamer:latest     "./application -Dqua…"   17 minutes ago   Up 17 minutes (healthy)   8080/tcp                           mitra-m001-events
+12ea72c009f2   ghcr.io/nsubrahm/merger:latest       "./application -Dqua…"   17 minutes ago   Up 17 minutes (healthy)   8080/tcp                           mitra-m001-merger
+5ea1870d6488   ghcr.io/nsubrahm/alarms:latest       "./application -Dqua…"   17 minutes ago   Up 17 minutes (healthy)   8080/tcp                           mitra-m001-alarms
+d0077ddfc9a1   ghcr.io/nsubrahm/alerts:latest       "./application -Dqua…"   17 minutes ago   Up 17 minutes (healthy)   8080/tcp                           mitra-m001-alerts
+73cc66a6a8ac   confluentinc/cp-kafka:7.5.2          "/etc/confluent/dock…"   22 minutes ago   Up 22 minutes (healthy)   0.0.0.0:9092->9092/tcp             mitra-m001-broker
+```
+
+8. _(Optional)_ Shut down.
 
 ```bash
 cd ${PROJECT_HOME}
 docker compose -f apps.yaml --env-file apps.env down
-cd scripts
-./clean.sh
+docker compose -f platform.yaml --env-file project.env down
 ```
