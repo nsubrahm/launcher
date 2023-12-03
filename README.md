@@ -2,7 +2,7 @@
 
 Maintenance Mitra is an application to display machine parameters, detect alarm conditions and duration in near real-time from one machine to one user at a time. The application is launched as a Docker Compose stack.
 
-![Screen-shot](./png/screen-shot.png)
+![Screen-shot](./png/dashboard.png)
 
 - [Introduction](#introduction)
   - [On-premise installation](#on-premise-installation)
