@@ -55,7 +55,7 @@ echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 
 ```bash
 cd $HOME
-wget https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launch.tar.gz
+wget https://github.com/nsubrahm/launcher/releases/download/r${MTMT_VERSION}/launch.tar.gz
 tar -xzf launch.tar.gz
 export PROJECT_HOME=$HOME/launch
 echo "export PROJECT_HOME=$HOME/launch" >> .profile
@@ -65,14 +65,14 @@ echo "export PROJECT_HOME=$HOME/launch" >> .profile
 
 ```bash
 cd ${PROJECT_HOME}
-docker compose -f platform.yaml --env-file project.env up -d
+docker compose -f platform.yaml --env-file platform.env up -d
 ```
 
 6. Launch applications.
 
 ```bash
 cd ${PROJECT_HOME}
-docker compose -f apps.yaml --env-file project.env up -d
+docker compose -f apps.yaml --env-file apps.env up -d
 ```
 
 7. Check running containers with `docker ps`.
@@ -93,5 +93,5 @@ d0077ddfc9a1   ghcr.io/nsubrahm/alerts:latest       "./application -Dqua…"   1
 ```bash
 cd ${PROJECT_HOME}
 docker compose -f apps.yaml --env-file apps.env down
-docker compose -f platform.yaml --env-file project.env down
+docker compose -f platform.yaml --env-file platform.env down
 ```
