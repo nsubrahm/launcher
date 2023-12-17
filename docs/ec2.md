@@ -3,10 +3,22 @@
 This page documents steps to install the application on EC2 instance.
 
 - [EC2 install instructions](#ec2-install-instructions)
+  - [Pre-requisites](#pre-requisites)
   - [Initialize](#initialize)
   - [Install Docker](#install-docker)
   - [Login to GHCR](#login-to-ghcr)
   - [Install](#install)
+
+## Pre-requisites
+
+The pre-requisites for installation are as follows:
+
+1. `t3a.medium` instance in public subnet or private subnet with NAT gateway enabled.
+2. Following ports should be opened. It is _strongly recommended_ that the source is limited to certain IP addresses than opening to "world".
+  1. `22` for `ssh`
+  2. `8080` for UI
+  3. `8081` for Payload
+  4. `8082` for Limits
 
 ## Initialize
 
@@ -43,6 +55,8 @@ sudo usermod -aG docker $USER
 ## Login to GHCR
 
 3. Log in to `ghcr.io` container registry.
+
+> Contact us for the value of `CR_PAT`.
 
 ```bash
 export CR_PAT=
@@ -86,6 +100,13 @@ e6a3fbc5847f   ghcr.io/nsubrahm/payload:latest      "./application"          17 
 5ea1870d6488   ghcr.io/nsubrahm/alarms:latest       "./application -Dqua…"   17 minutes ago   Up 17 minutes (healthy)   8080/tcp                           mitra-m001-alarms
 d0077ddfc9a1   ghcr.io/nsubrahm/alerts:latest       "./application -Dqua…"   17 minutes ago   Up 17 minutes (healthy)   8080/tcp                           mitra-m001-alerts
 73cc66a6a8ac   confluentinc/cp-kafka:7.5.2          "/etc/confluent/dock…"   22 minutes ago   Up 22 minutes (healthy)   0.0.0.0:9092->9092/tcp             mitra-m001-broker
+```
+
+If any of the applications appear as `Unhealthy`, shut down the applications and start again using the following commands.
+
+```bash
+docker compose -f apps.yaml --env-file apps.env down
+docker compose -f apps.yaml --env-file apps.env up -d
 ```
 
 8. _(Optional)_ Shut down.

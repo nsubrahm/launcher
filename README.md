@@ -34,7 +34,7 @@ See [here](docs/on-premises.md) for install instructions on on-premise machine.
 
 ## EC2 installation
 
-The diagram below shows the topology to install Maintenance Mitra application on the on-premises server.
+The diagram below shows the topology to install Maintenance Mitra application on an EC2 instance.
 
 ![ec2](png/ec2.png)
 

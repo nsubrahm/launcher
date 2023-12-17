@@ -1,4 +1,4 @@
-# On-premise install instructions
+# On-premises install instructions
 
 This page documents steps to install the application on an on-premise instance.
 
@@ -6,6 +6,14 @@ This page documents steps to install the application on an on-premise instance.
   - [Initialize](#initialize)
   - [Login to GHCR](#login-to-ghcr)
   - [Install](#install)
+
+## Pre-requisites
+
+The pre-requisites for installation are as follows:
+
+1. A 64-bit Windows or a Linux server with minimum 1 core CPU and 4GB RAM to spare.
+2. Docker and Docker Compose are pre-installed.
+3. Internet connection should be available for the duration of installation (typically, 15 mins).
 
 ## Initialize
 
