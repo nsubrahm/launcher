@@ -2,7 +2,8 @@
 
 This page documents steps to install the application on an on-premise instance.
 
-- [On-premise install instructions](#on-premise-install-instructions)
+- [On-premises install instructions](#on-premises-install-instructions)
+  - [Pre-requisites](#pre-requisites)
   - [Initialize](#initialize)
   - [Login to GHCR](#login-to-ghcr)
   - [Install](#install)
@@ -28,6 +29,8 @@ echo "export MTMT_VERSION=0.0.0" >> .profile
 
 2. Log in to `ghcr.io` container registry.
 
+> Contact us for value of `CR_PAT`.
+
 ```bash
 export CR_PAT=
 echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
@@ -49,14 +52,14 @@ echo "export PROJECT_HOME=$HOME/launch" >> .profile
 
 ```bash
 cd ${PROJECT_HOME}
-docker compose -f platform.yaml --env-file project.env up -d
+docker compose -f platform.yaml --env-file platform.env up -d
 ```
 
 5. Launch applications.
 
 ```bash
 cd ${PROJECT_HOME}
-docker compose -f apps.yaml --env-file project.env up -d
+docker compose -f apps.yaml --env-file apps.env up -d
 ```
 
 6. Check running containers with `docker ps`.
@@ -70,6 +73,13 @@ e6a3fbc5847f   ghcr.io/nsubrahm/payload:latest      "./application"          17 
 5ea1870d6488   ghcr.io/nsubrahm/alarms:latest       "./application -Dqua…"   17 minutes ago   Up 17 minutes (healthy)   8080/tcp                           mitra-m001-alarms
 d0077ddfc9a1   ghcr.io/nsubrahm/alerts:latest       "./application -Dqua…"   17 minutes ago   Up 17 minutes (healthy)   8080/tcp                           mitra-m001-alerts
 73cc66a6a8ac   confluentinc/cp-kafka:7.5.2          "/etc/confluent/dock…"   22 minutes ago   Up 22 minutes (healthy)   0.0.0.0:9092->9092/tcp             mitra-m001-broker
+```
+
+If any of the applications appear as `Unhealthy`, shut down the applications and start again using the following commands.
+
+```bash
+docker compose -f apps.yaml --env-file apps.env down
+docker compose -f apps.yaml --env-file apps.env up -d
 ```
 
 7. _(Optional)_ Shut down.
