@@ -8,11 +8,8 @@ Maintenance Mitra is an application to display machine parameters, detect alarm 
   - [On-premise installation](#on-premise-installation)
     - [Pre-requisites](#pre-requisites)
     - [Install instructions](#install-instructions)
-  - [EC2 installation](#ec2-installation)
-    - [Pre-requisites](#pre-requisites-1)
-    - [Install instructions](#install-instructions-1)
 
-This repository documents installation of Maintenance Mitra on two targets - on-premise or AWS EC2.
+This repository documents installation of Maintenance Mitra on on-premise.
 
 ## On-premise installation
 
@@ -31,24 +28,3 @@ The pre-requisites for installation are as follows:
 ### Install instructions
 
 See [here](docs/on-premises.md) for install instructions on on-premise machine.
-
-## EC2 installation
-
-The diagram below shows the topology to install Maintenance Mitra application on an EC2 instance.
-
-![ec2](png/ec2.png)
-
-### Pre-requisites
-
-The pre-requisites for installation are as follows:
-
-1. `t3a.medium` instance in public subnet or private subnet with NAT gateway enabled.
-2. Following ports should be opened. It is _strongly recommended_ that the source is limited to certain IP addresses than opening to "world".
-  1. `22` for `ssh`
-  2. `8080` for UI
-  3. `8081` for Payload
-  4. `8082` for Limits
-
-### Install instructions
-
-See [here](docs/ec2.md) for install instructions on EC2 machine.
