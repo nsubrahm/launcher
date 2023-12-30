@@ -1,6 +1,6 @@
 # Introduction
 
-Maintenance Mitra is an application to display machine parameters, detect alarm conditions and duration in near real-time from one machine to one user at a time. The application is launched as a Docker Compose stack.
+Maintenance Mitra is an application to display machine parameters, detect alarm conditions and duration in near real-time from one machine to one user at a time. The application is launched as a Docker Compose stack. This application is available for free with default [license](#license).
 
 ![Screen-shot](./png/dashboard.png)
 
@@ -8,14 +8,23 @@ Maintenance Mitra is an application to display machine parameters, detect alarm 
   - [On-premise installation](#on-premise-installation)
     - [Pre-requisites](#pre-requisites)
     - [Install instructions](#install-instructions)
+  - [Usage](#usage)
+    - [Quick start](#quick-start)
+    - [Customization](#customization)
+  - [License](#license)
 
-This repository documents installation of Maintenance Mitra on on-premise.
+This repository documents installation and usage of Maintenance Mitra on on-premise.
 
 ## On-premise installation
 
 The diagram below shows the topology to install Maintenance Mitra application on the on-premises server.
 
 ![on-premise](png/on-premise.png)
+
+1. The equipment, or a REST API client, publishes raw data to the `/data` endpoint.
+2. The console accesses the `/ui` endpoint to view the dashboard.
+3. The console may access the `/limits` endpoint to browse or set limits of the parameters published by the equipment or REST API client.
+4. The `/data`, `/limits` and `/ui` endpoints are hosted as Quarkus applications accessing Kafka broker as a Docker Compose stack. The Docker Compose stack is hosted on a physical or a virtual machine.
 
 ### Pre-requisites
 
@@ -28,3 +37,37 @@ The pre-requisites for installation are as follows:
 ### Install instructions
 
 See [here](docs/on-premises.md) for install instructions on on-premise machine.
+
+## Usage
+
+Once installed, the application can be used immediately or with customizations.
+
+> In either mode - quick start or customizations - the default license key will apply. See [License](#license) for more details.
+
+### Quick start
+
+1. The application expects raw data at the `/data` endpoint via a HTTP `POST` call. For details on developing a REST API client application conforming to the payload, see [payload documentation](./docs/payload.md).
+
+2. To generate alerts on parameters of the payload, the limits of the parameters should be configured. For details on developing a REST API client conforming to payload, see [limits documentation](./docs/limits.md). If limits are not configured, then no alerts will be generated. However, the application can be still used.
+
+3. Enter `http://localhost:8080/ui` in a browser to view the dashboard.
+
+4. To apply a new license, edit `conf/license.key` file with new license key. Contact us for the new license key. 
+
+### Customization
+
+1. The application expects raw data at the `/data` endpoint via a HTTP `POST` call. For details on developing a REST API client application conforming to the payload, see [payload documentation](./docs/payload.md).
+
+2. To generate alerts on parameters of the payload, the limits of the parameters should be configured. For details on developing a REST API client conforming to payload, see [limits documentation](./docs/limits.md). If limits are not configured, then no alerts will be generated. However, the application can be still used.
+
+3. Enter `http://localhost:8080/ui` in a browser to view the dashboard.
+
+4. To apply a new license, edit `conf/license.key` file with new license key. Contact us for the new license key. 
+
+5. Only dashboard customization is supported. Contact us for development of new dashboard.
+
+## License
+
+By default, this application implements rate-limiting such that, a maximum of `3600` requests can be sent in a time window of `1 hour` - whichever is earlier. For example, if a machine publishes data every second, then the machine can keep publishing continuously upto a maximum of `3600` requests (`1*3600=3600`) for upto `1 hour`. The rate limit is applied even if the number of requests exceed `3600` _within_ the time window of `1 hour`.
+
+To upgrade, contact us for a new license key. Edit `conf/license.env` with the new license key.
