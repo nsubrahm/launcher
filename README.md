@@ -46,7 +46,7 @@ Once installed, the application can be used immediately or with customizations.
 
 ### Quick start
 
-1. The application expects raw data at the `/data` endpoint via a HTTP `POST` call. For details on developing a REST API client application conforming to the payload, see [payload documentation](./docs/payload.md).
+1. The application expects raw data at the `/data` endpoint via a HTTP `POST` call. For details on developing a REST API client application conforming to the payload, see [payload documentation](./docs/payload.md). You can test with a [REST client simulator](https://github.com/nsubrahm/simulators/tree/main/rest).
 
 2. To generate alerts on parameters of the payload, the limits of the parameters should be configured. For details on developing a REST API client conforming to payload, see [limits documentation](./docs/limits.md). If limits are not configured, then no alerts will be generated. However, the application can be still used.
 
@@ -56,7 +56,7 @@ Once installed, the application can be used immediately or with customizations.
 
 ### Customization
 
-1. The application expects raw data at the `/data` endpoint via a HTTP `POST` call. For details on developing a REST API client application conforming to the payload, see [payload documentation](./docs/payload.md).
+1. The application expects raw data at the `/data` endpoint via a HTTP `POST` call. For details on developing a REST API client application conforming to the payload, see [payload documentation](./docs/payload.md). You can test with a [REST client simulator](https://github.com/nsubrahm/simulators/tree/main/rest).
 
 2. To generate alerts on parameters of the payload, the limits of the parameters should be configured. For details on developing a REST API client conforming to payload, see [limits documentation](./docs/limits.md). If limits are not configured, then no alerts will be generated. However, the application can be still used.
 
