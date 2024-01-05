@@ -90,6 +90,7 @@ services:
         condition: service_healthy
     env_file:
       - ./conf/common.env
+      - ./conf/secure.env
       - ./conf/payload.env
       - ./conf/license.env
     ports:
