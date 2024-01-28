@@ -5,7 +5,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-init
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/kafka-tools:${KAFKA_TOOLS_TAG:-latest}
     env_file:
-      - ./conf/common.env    
+      - ./conf/common.env
       - ./conf/init.env
     networks:
       - broker
@@ -31,7 +31,7 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
     env_file:
       - ./conf/common.env
-      - ./conf/crypto.env      
+      - ./conf/crypto.env
       - ./conf/alerts.env
     networks:
       - broker
