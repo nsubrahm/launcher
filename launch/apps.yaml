@@ -15,7 +15,6 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alarms:${ALARMS_TAG:-latest}
     env_file:
       - ./conf/common.env
-      - ./conf/crypto.env
       - ./conf/alarms.env
     networks:
       - broker
@@ -31,7 +30,6 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
     env_file:
       - ./conf/common.env
-      - ./conf/crypto.env
       - ./conf/alerts.env
     networks:
       - broker
@@ -52,7 +50,6 @@ services:
         condition: service_healthy
     env_file:
       - ./conf/common.env
-      - ./conf/crypto.env
       - ./conf/merger.env
     networks:
       - broker
