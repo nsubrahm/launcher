@@ -1,5 +1,3 @@
-version: '3.5'
-
 services:
   init:
     container_name: ${COMPOSE_PROJECT_NAME}-init
@@ -26,11 +24,13 @@ services:
       start_period: 10s
 
   alerts:
-    container_name: ${COMPOSE_PROJECT_NAME}-alerts
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
     env_file:
       - ./conf/common.env
       - ./conf/alerts.env
+    deploy:
+      mode: replicated
+      replicas: 3
     networks:
       - broker
     healthcheck:
@@ -45,8 +45,6 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/merger:${MERGER_TAG:-latest}
     depends_on:
       alarms:
-        condition: service_healthy
-      alerts:
         condition: service_healthy
     env_file:
       - ./conf/common.env

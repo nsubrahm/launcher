@@ -1,5 +1,3 @@
-version: '3.5'
-
 services:
   broker:
     container_name: ${COMPOSE_PROJECT_NAME}-broker
