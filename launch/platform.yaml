@@ -33,7 +33,6 @@ services:
       timeout: 30s
       retries: 3
       start_period: 10s
-
     networks:
       - broker
 
