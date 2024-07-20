@@ -4,13 +4,16 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/kafka-tools:${KAFKA_TOOLS_TAG:-latest}
     env_file:
       - ./conf/common.env
-      - ./conf/init.env
+      - ./conf/topics.env
     networks:
       - broker
 
-  ksqldb:
-    container_name: ${COMPOSE_PROJECT_NAME}-ksqldb
+  queries:
+    container_name: ${COMPOSE_PROJECT_NAME}-queries
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/queries:${QUERIES_TAG:-latest}
+    depends_on:
+      topics:
+        condition: service_completed_successfully
     env_file:
       - ./conf/common.env
       - ./conf/queries.env
@@ -56,26 +59,6 @@ services:
       timeout: 30s
       retries: 3
       start_period: 10s
-
-  # merger:
-  #   container_name: ${COMPOSE_PROJECT_NAME}-merger
-  #   image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/merger:${MERGER_TAG:-latest}
-  #   depends_on:
-  #     alarms:
-  #       condition: service_healthy
-  #     alerts:
-  #       condition: service_healthy
-  #   env_file:
-  #     - ./conf/common.env
-  #     - ./conf/merger.env
-  #   networks:
-  #     - broker
-  #   healthcheck:
-  #     test: /work/health
-  #     interval: 2s
-  #     timeout: 30s
-  #     retries: 3
-  #     start_period: 10s
 
   events:
     container_name: ${COMPOSE_PROJECT_NAME}-events
