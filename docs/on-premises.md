@@ -95,6 +95,8 @@ docker compose -f apps.yaml --env-file apps.env down
 docker compose -f apps.yaml --env-file apps.env up -d
 ```
 
+As a result of launching applications, two containers would have started and exited successfully. These are `mitra-m001-topics` and `mitra-m001-queris`. These containers can be seen with `docker ps -a`.
+
 ## Clean-up
 
 7. _(Optional)_ Shut down the complete deployment.

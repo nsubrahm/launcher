@@ -8,8 +8,22 @@ services:
     networks:
       - broker
 
-  queries:
-    container_name: ${COMPOSE_PROJECT_NAME}-queries
+  limits:
+    container_name: ${COMPOSE_PROJECT_NAME}-limits
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/limits:${LIMITS_TAG:-latest}
+    depends_on:
+      topics:
+        condition: service_completed_successfully
+    env_file:
+      - ./conf/common.env
+      - ./conf/limits.env
+    ports:
+      - "8083:8083"
+    networks:
+      - broker
+
+  queris:
+    container_name: ${COMPOSE_PROJECT_NAME}-queris
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/queries:${QUERIES_TAG:-latest}
     depends_on:
       topics:
@@ -26,7 +40,7 @@ services:
     depends_on:
       topics:
         condition: service_completed_successfully
-      queries:
+      queris:
         condition: service_completed_successfully
     env_file:
       - ./conf/common.env
@@ -46,7 +60,7 @@ services:
     depends_on:
       topics:
         condition: service_completed_successfully
-      queries:
+      queris:
         condition: service_completed_successfully
     env_file:
       - ./conf/common.env
@@ -71,6 +85,8 @@ services:
     env_file:
       - ./conf/common.env
       - ./conf/events.env
+    ports:
+      - "8085:8085"
     networks:
       - broker
     healthcheck:
@@ -103,18 +119,6 @@ services:
       retries: 3
       start_period: 10s
 
-  limits:
-    container_name: ${COMPOSE_PROJECT_NAME}-limits
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/limits:${LIMITS_TAG:-latest}
-    depends_on:
-      topics:
-        condition: service_completed_successfully
-    env_file:
-      - ./conf/common.env
-      - ./conf/limits.env
-    networks:
-      - broker
-
   output:
     container_name: ${COMPOSE_PROJECT_NAME}-output
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/dashboard:${DASHBOARD_TAG:-latest}
@@ -125,7 +129,7 @@ services:
       - ./conf/common.env
       - ./conf/dashboard.env
     ports:
-      - "8085:8085"
+      - "8080:8080"
     networks:
       - broker
 
