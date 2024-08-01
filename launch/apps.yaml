@@ -1,10 +1,36 @@
 services:
-  init:
-    container_name: ${COMPOSE_PROJECT_NAME}-init
+  topics:
+    container_name: ${COMPOSE_PROJECT_NAME}-topics
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/kafka-tools:${KAFKA_TOOLS_TAG:-latest}
     env_file:
       - ./conf/common.env
-      - ./conf/init.env
+      - ./conf/topics.env
+    networks:
+      - broker
+
+  limits:
+    container_name: ${COMPOSE_PROJECT_NAME}-limits
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/limits:${LIMITS_TAG:-latest}
+    depends_on:
+      topics:
+        condition: service_completed_successfully
+    env_file:
+      - ./conf/common.env
+      - ./conf/limits.env
+    ports:
+      - "8083:8083"
+    networks:
+      - broker
+
+  queris:
+    container_name: ${COMPOSE_PROJECT_NAME}-queris
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/queries:${QUERIES_TAG:-latest}
+    depends_on:
+      topics:
+        condition: service_completed_successfully
+    env_file:
+      - ./conf/common.env
+      - ./conf/queries.env
     networks:
       - broker
 
@@ -12,7 +38,9 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-alerts
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
     depends_on:
-      init:
+      topics:
+        condition: service_completed_successfully
+      queris:
         condition: service_completed_successfully
     env_file:
       - ./conf/common.env
@@ -30,7 +58,9 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-alarms
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alarms:${ALARMS_TAG:-latest}
     depends_on:
-      init:
+      topics:
+        condition: service_completed_successfully
+      queris:
         condition: service_completed_successfully
     env_file:
       - ./conf/common.env
@@ -44,9 +74,9 @@ services:
       retries: 3
       start_period: 10s
 
-  merger:
-    container_name: ${COMPOSE_PROJECT_NAME}-merger
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/merger:${MERGER_TAG:-latest}
+  events:
+    container_name: ${COMPOSE_PROJECT_NAME}-events
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/streamer:${STREAMER_TAG:-latest}
     depends_on:
       alarms:
         condition: service_healthy
@@ -54,25 +84,9 @@ services:
         condition: service_healthy
     env_file:
       - ./conf/common.env
-      - ./conf/merger.env
-    networks:
-      - broker
-    healthcheck:
-      test: /work/health
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
-
-  events:
-    container_name: ${COMPOSE_PROJECT_NAME}-events
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/streamer:${STREAMER_TAG:-latest}
-    depends_on:
-      merger:
-        condition: service_healthy
-    env_file:
-      - ./conf/common.env
       - ./conf/events.env
+    ports:
+      - "8085:8085"
     networks:
       - broker
     healthcheck:
@@ -90,15 +104,12 @@ services:
         condition: service_healthy
       alarms:
         condition: service_healthy
-      merger:
-        condition: service_healthy
     env_file:
       - ./conf/common.env
-      - ./conf/secure.env
       - ./conf/payload.env
       - ./conf/license.env
     ports:
-      - "8081:8081"
+      - "8084:8084"
     networks:
       - broker
     healthcheck:
@@ -108,20 +119,6 @@ services:
       retries: 3
       start_period: 10s
 
-  limits:
-    container_name: ${COMPOSE_PROJECT_NAME}-limits
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/limits:${LIMITS_TAG:-latest}
-    depends_on:
-      init:
-        condition: service_completed_successfully
-      merger:
-        condition: service_healthy
-    env_file:
-      - ./conf/common.env
-      - ./conf/limits.env
-    networks:
-      - broker
-
   output:
     container_name: ${COMPOSE_PROJECT_NAME}-output
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/dashboard:${DASHBOARD_TAG:-latest}
@@ -130,7 +127,6 @@ services:
         condition: service_healthy
     env_file:
       - ./conf/common.env
-      - ./conf/secure.env
       - ./conf/dashboard.env
     ports:
       - "8080:8080"
