@@ -56,7 +56,7 @@ echo "export PROJECT_HOME=$HOME/launch" >> .profile
 
 ```bash
 cd ${PROJECT_HOME}
-docker compose -f platform.yaml --env-file platform.env up -d
+docker compose --env-file platform.env -f platform.yaml up -d
 ```
 
 Run `docker ps` to see the containers `mitra-platform-kafka` and `mitra-platform-ksqldb` running in healthy status as shown below. It might take around 10 seconds or so for containers to appear healthy.
@@ -71,28 +71,28 @@ d058aedd768f   confluentinc/cp-kafka:latest        "/etc/confluent/dock…"   28
 
 ```bash
 cd ${PROJECT_HOME}
-docker compose -f apps.yaml --env-file apps.env up -d
+docker compose --env-file apps.env -f apps.yaml up -d
 ```
 
 6. Check running containers with `docker ps`.
 
 ```bash
-CONTAINER ID   IMAGE                                COMMAND                  CREATED          STATUS                    PORTS                              NAMES
-24a2b806b4d6   confluentinc/ksqldb-server:latest    "/usr/bin/docker/run"    18 minutes ago   Up 18 minutes (healthy)   0.0.0.0:8088->8088/tcp             mitra-platform-ksqldb
-d058aedd768f   confluentinc/cp-kafka:latest         "/etc/confluent/dock…"   18 minutes ago   Up 18 minutes (healthy)   0.0.0.0:9092->9092/tcp             mitra-platform-broker
-1ce3f646b56f   ghcr.io/nsubrahm/dashboard:latest    "./entrypoint.sh"        17 minutes ago   Up 17 minutes (healthy)   1880/tcp, 0.0.0.0:8080->8080/tcp   mitra-m001-output
-e6a3fbc5847f   ghcr.io/nsubrahm/payload:latest      "./application"          17 minutes ago   Up 17 minutes (healthy)   8080/tcp, 0.0.0.0:8081->8081/tcp   mitra-m001-inputs
-4ce2110a7edb   ghcr.io/nsubrahm/streamer:latest     "./application -Dqua…"   17 minutes ago   Up 17 minutes (healthy)   8080/tcp                           mitra-m001-events
-12ea72c009f2   ghcr.io/nsubrahm/merger:latest       "./application -Dqua…"   17 minutes ago   Up 17 minutes (healthy)   8080/tcp                           mitra-m001-merger
-5ea1870d6488   ghcr.io/nsubrahm/alarms:latest       "./application -Dqua…"   17 minutes ago   Up 17 minutes (healthy)   8080/tcp                           mitra-m001-alarms
-d0077ddfc9a1   ghcr.io/nsubrahm/alerts:latest       "./application -Dqua…"   17 minutes ago   Up 17 minutes (healthy)   8080/tcp                           mitra-m001-alerts
+CONTAINER ID  IMAGE                               COMMAND                  CREATED          STATUS                            PORTS                              NAMES
+b8c838d6b903  ghcr.io/nsubrahm/dashboard:latest   "./entrypoint.sh"        53 seconds ago   Up 4 seconds (health: starting)   1880/tcp, 0.0.0.0:8080->8080/tcp   mitra-m001-output
+3d150377b2ac  ghcr.io/nsubrahm/streamer:latest    "./application -Dqua…"   53 seconds ago   Up 10 seconds (healthy)           8080/tcp                           mitra-m001-events
+445ce2eab588  ghcr.io/nsubrahm/payload:latest     "./application"          53 seconds ago   Up 10 seconds (healthy)           8080/tcp, 0.0.0.0:8084->8084/tcp   mitra-m001-inputs
+c1464c886a2d  ghcr.io/nsubrahm/alarms:latest      "./application -Dqua…"   53 seconds ago   Up 16 seconds (healthy)           8080/tcp                           mitra-m001-alarms
+3612d418d682  ghcr.io/nsubrahm/alerts:latest      "./application -Dqua…"   53 seconds ago   Up 16 seconds (healthy)           8080/tcp                           mitra-m001-alerts
+3c00e581d9b0  ghcr.io/nsubrahm/limits:latest      "./application"          53 seconds ago   Up 27 seconds                     0.0.0.0:8083->8083/tcp             mitra-m001-limits
+b25eccc7cb22  confluentinc/ksqldb-server:latest   "/usr/bin/docker/run"    2 minutes ago    Up 2 minutes (healthy)            0.0.0.0:8088->8088/tcp             mitra-platform-ksqldb
+30675fa37b29  confluentinc/cp-kafka:latest        "/etc/confluent/dock…"   2 minutes ago    Up 2 minutes (healthy)            0.0.0.0:9092->9092/tcp             mitra-platform-broker
 ```
 
 If any of the containers appear as `Unhealthy` in the list above, then shut down the applications and start again using the following commands.
 
 ```bash
-docker compose -f apps.yaml --env-file apps.env down
-docker compose -f apps.yaml --env-file apps.env up -d
+docker compose --env-file apps.env -f apps.yaml down
+docker compose --env-file apps.env -f apps.yaml up -d
 ```
 
 As a result of launching applications, two containers would have started and exited successfully. These are `mitra-m001-topics` and `mitra-m001-queris`. These containers can be seen with `docker ps -a`.
@@ -103,6 +103,6 @@ As a result of launching applications, two containers would have started and exi
 
 ```bash
 cd ${PROJECT_HOME}
-docker compose -f apps.yaml --env-file apps.env down
-docker compose -f platform.yaml --env-file project.env down
+docker compose --env-file apps.env -f apps.yaml down
+docker compose --env-file project.env -f platform.yaml down
 ```
