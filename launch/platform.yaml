@@ -1,0 +1,41 @@
+services:
+  broker:
+    container_name: ${COMPOSE_PROJECT_NAME}-broker
+    image: confluentinc/cp-kafka:${KAFKA_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/broker.env
+    ports:
+      - "9092:9092"
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--list", "--bootstrap-server", "localhost:9092"]
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    networks:
+      - broker
+
+  ksqldb:
+    container_name: ${COMPOSE_PROJECT_NAME}-ksqldb
+    image: confluentinc/ksqldb-server:${KAFKA_SQLDB_TAG:-latest}
+    depends_on:
+      broker:
+        condition: service_healthy
+    env_file:
+      - ./conf/common.env
+      - ./conf/ksql.env
+    ports:
+      - "8088:8088"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088"]
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    networks:
+      - broker
+
+networks:
+  broker:
+    name: broker

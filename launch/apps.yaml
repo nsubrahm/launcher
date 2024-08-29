@@ -1,0 +1,159 @@
+services:
+  topics:
+    container_name: ${COMPOSE_PROJECT_NAME}-topics
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/kafka-tools:${KAFKA_TOOLS_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/topics.env
+    networks:
+      - broker
+
+  queris:
+    container_name: ${COMPOSE_PROJECT_NAME}-queris
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/queries:${QUERIES_TAG:-latest}
+    depends_on:
+      topics:
+        condition: service_completed_successfully
+    env_file:
+      - ./conf/common.env
+      - ./conf/queries.env
+    networks:
+      - broker
+
+  limits:
+    container_name: ${COMPOSE_PROJECT_NAME}-limits
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/limits:${LIMITS_TAG:-latest}
+    depends_on:
+      topics:
+        condition: service_completed_successfully
+    env_file:
+      - ./conf/common.env
+      - ./conf/limits.env
+    ports:
+      - "8083:8083"
+    networks:
+      - broker
+
+  alerts:
+    container_name: ${COMPOSE_PROJECT_NAME}-alerts
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
+    depends_on:
+      topics:
+        condition: service_completed_successfully
+      queris:
+        condition: service_completed_successfully
+    env_file:
+      - ./conf/common.env
+      - ./conf/alerts.env
+    networks:
+      - broker
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+
+  alarms:
+    container_name: ${COMPOSE_PROJECT_NAME}-alarms
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alarms:${ALARMS_TAG:-latest}
+    depends_on:
+      topics:
+        condition: service_completed_successfully
+      queris:
+        condition: service_completed_successfully
+    env_file:
+      - ./conf/common.env
+      - ./conf/alarms.env
+    networks:
+      - broker
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+
+  events:
+    container_name: ${COMPOSE_PROJECT_NAME}-events
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/streamer:${STREAMER_TAG:-latest}
+    depends_on:
+      alarms:
+        condition: service_healthy
+      alerts:
+        condition: service_healthy
+    env_file:
+      - ./conf/common.env
+      - ./conf/events.env
+    networks:
+      - broker
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+
+  inputs:
+    container_name: ${COMPOSE_PROJECT_NAME}-inputs
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/payload:${PAYLOAD_TAG:-latest}
+    depends_on:
+      alerts:
+        condition: service_healthy
+      alarms:
+        condition: service_healthy
+    env_file:
+      - ./conf/common.env
+      - ./conf/payload.env
+      - ./conf/license.env
+    ports:
+      - "8084:8084"
+    networks:
+      - broker
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+
+  anomaly:
+    container_name: ${COMPOSE_PROJECT_NAME}-anomal
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/anomaly:${ANOMALY_TAG:-latest}
+    depends_on:
+      events:
+        condition: service_healthy
+    env_file:
+      - ./conf/common.env
+      - ./conf/anomaly.env
+    ports:
+      - "8086:8086"
+    networks:
+      - broker
+    healthcheck:
+      test: ["CMD", "python", "/health/health.py"]
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+
+  output:
+    container_name: ${COMPOSE_PROJECT_NAME}-output
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/dashboard:${DASHBOARD_TAG:-latest}
+    depends_on:
+      events:
+        condition: service_healthy
+      anomaly:
+        condition: service_healthy
+    env_file:
+      - ./conf/common.env
+      - ./conf/dashboard.env
+    ports:
+      - "8080:8080"
+    networks:
+      - broker
+
+networks:
+  broker:
+    external: true
+    name: broker
