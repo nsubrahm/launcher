@@ -121,7 +121,6 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-anomal
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/anomaly:${ANOMALY_TAG:-latest}
     depends_on:
-    depends_on:
       alarms:
         condition: service_healthy
       alerts:

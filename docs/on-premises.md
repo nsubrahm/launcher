@@ -4,10 +4,13 @@ This page documents steps to install the application on an on-premise instance.
 
 - [On-premises install instructions](#on-premises-install-instructions)
   - [Pre-requisites](#pre-requisites)
-  - [Login to GHCR](#login-to-ghcr)
-  - [Install](#install)
-  - [Launch](#launch)
-  - [Clean-up](#clean-up)
+  - [Installation](#installation)
+    - [Login to GHCR](#login-to-ghcr)
+    - [Download](#download)
+    - [Generate environment variables files](#generate-environment-variables-files)
+    - [Launch](#launch)
+    - [Clean-up](#clean-up)
+  - [Configuration file](#configuration-file)
 
 ## Pre-requisites
 
@@ -15,9 +18,14 @@ The pre-requisites for installation are as follows:
 
 1. A 64-bit Windows or a Linux server with minimum 1 core CPU and 4GB RAM to spare.
 2. Docker and Docker Compose are pre-installed.
-3. Internet connection should be available for the duration of installation (typically, 15 mins).
+3. Python 3.x is installed.
+4. Internet connection should be available for the duration of installation (typically, 15 mins).
 
-## Login to GHCR
+## Installation
+
+The following steps will install Maintenance Mitra.
+
+### Login to GHCR
 
 1. Log in to `ghcr.io` container registry.
 
@@ -28,7 +36,7 @@ export CR_PAT=
 echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 ```
 
-## Install
+### Download
 
 2. Download and unzip application archive.
 
@@ -40,13 +48,23 @@ export PROJECT_HOME=$HOME/launch
 echo "export PROJECT_HOME=$HOME/launch" >> .profile
 ```
 
-## Launch
+### Generate environment variables files
 
-3. Launch platform.
+3. Create folder `launch/conf`.
+4. (Optional) Modify `config.json` if required.
 
 ```bash
 cd ${PROJECT_HOME}
-docker compose --env-file platform.env -f platform.yaml up -d
+python scripts/main.py
+```
+
+### Launch
+
+5. Launch platform.
+
+```bash
+cd ${PROJECT_HOME}
+docker compose --env-file launch/conf/platform.env -f launch/platform.yaml up -d
 ```
 
 Run `docker ps` to see the containers `mitra-platform-kafka` and `mitra-platform-ksqldb` running in healthy status as shown below. It might take around 10 seconds or so for containers to appear healthy.
@@ -57,14 +75,14 @@ CONTAINER ID   IMAGE                               COMMAND                  CREA
 d058aedd768f   confluentinc/cp-kafka:latest        "/etc/confluent/dock…"   28 seconds ago   Up 27 seconds (healthy)   0.0.0.0:9092->9092/tcp   mitra-platform-broker
 ```
 
-4. Launch applications.
+6. Launch applications.
 
 ```bash
 cd ${PROJECT_HOME}
-docker compose --env-file apps.env -f apps.yaml up -d
+docker compose --env-file launch/conf/apps.env -f launch/apps.yaml up -d
 ```
 
-5. Check running containers with `docker ps`.
+7. Check running containers with `docker ps`.
 
 ```bash
 CONTAINER ID  IMAGE                               COMMAND                  CREATED          STATUS                            PORTS                              NAMES
@@ -82,18 +100,42 @@ b25eccc7cb22  confluentinc/ksqldb-server:latest   "/usr/bin/docker/run"    2 min
 If any of the containers appear as `Unhealthy` in the list above, then shut down the applications and start again using the following commands.
 
 ```bash
-docker compose --env-file apps.env -f apps.yaml down
-docker compose --env-file apps.env -f apps.yaml up -d
+docker compose --env-file launch/conf/apps.env -f launch/apps.yaml down
+docker compose --env-file launch/conf/apps.env -f launch/apps.yaml up -d
 ```
 
 As a result of launching applications, two containers would have started and exited successfully. These are `mitra-m001-topics` and `mitra-m001-queris`. These containers can be seen with `docker ps -a`.
 
-## Clean-up
+### Clean-up
 
-6. _(Optional)_ Shut down the complete deployment.
+8. _(Optional)_ Shut down the complete deployment.
 
 ```bash
 cd ${PROJECT_HOME}
-docker compose --env-file apps.env -f apps.yaml down
-docker compose --env-file platform.env -f platform.yaml down
+docker compose --env-file launch/conf/apps.env -f launch/apps.yaml down
+docker compose --env-file launch/conf/platform.env -f launch/platform.yaml down
 ```
+
+## Configuration file
+
+The following configuration file can be set-up to generate environment variables and to control overall installation.
+
+```json
+{
+  "PROJECT_NAME": "M001",
+  "MACHINE_ID_CAPS": "M001",
+  "MACHINE_ID": "m001",
+  "sourceDir": "launch/config",
+  "templateDir" : "launch/templates",
+  "outputDir": "launch/conf"
+}
+```
+
+| Key               | Description                                                                                                                     |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `PROJECT_NAME`    | Machine ID in upper case to distinguish deployments for multiple machines. Change this only if deploying for multiple machines. |
+| `MACHINE_ID_CAPS` | Machine ID in upper case typically used for application IDs, etc. Change this only if deploying for multiple machines.          |
+| `MACHINE_ID`      | Machine ID in lower case typically used for topic names, etc. Change this only if deploying for multiple machines.              |
+| `sourceDir`       | **Do not change.** A folder to copy non-templated files.                                                                        |
+| `templateDir`     | **Do not change.** A folder to copy templated files.                                                                            |
+| `outputDir`       | A folder to save generated environment variable files. Changing this will impact the `docker compose` commands.                 |
