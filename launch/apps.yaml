@@ -121,13 +121,14 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-anomal
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/anomaly:${ANOMALY_TAG:-latest}
     depends_on:
-      events:
+    depends_on:
+      alarms:
+        condition: service_healthy
+      alerts:
         condition: service_healthy
     env_file:
       - ./conf/common.env
       - ./conf/anomaly.env
-    ports:
-      - "8086:8086"
     networks:
       - broker
     healthcheck:
