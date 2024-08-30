@@ -117,26 +117,6 @@ services:
       retries: 3
       start_period: 10s
 
-  anomaly:
-    container_name: ${COMPOSE_PROJECT_NAME}-anomal
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/anomaly:${ANOMALY_TAG:-latest}
-    depends_on:
-      alarms:
-        condition: service_healthy
-      alerts:
-        condition: service_healthy
-    env_file:
-      - ./conf/common.env
-      - ./conf/anomaly.env
-    networks:
-      - broker
-    healthcheck:
-      test: ["CMD", "python", "/health/health.py"]
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
-
   output:
     container_name: ${COMPOSE_PROJECT_NAME}-output
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/dashboard:${DASHBOARD_TAG:-latest}

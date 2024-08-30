@@ -86,7 +86,6 @@ docker compose --env-file launch/conf/apps.env -f launch/apps.yaml up -d
 
 ```bash
 CONTAINER ID  IMAGE                               COMMAND                  CREATED          STATUS                            PORTS                              NAMES
-38ff4b3b790a  ghcr.io/nsubrahm/anomaly:latest     "python /app/main.py"    53 seconds ago   Up 10 seconds (healthy)           0.0.0.0:8086->8086/tcp             mitra-m001-anomal
 b8c838d6b903  ghcr.io/nsubrahm/dashboard:latest   "./entrypoint.sh"        53 seconds ago   Up 10 seconds (healthy)           1880/tcp, 0.0.0.0:8080->8080/tcp   mitra-m001-output
 3d150377b2ac  ghcr.io/nsubrahm/streamer:latest    "./application -Dqua…"   53 seconds ago   Up 10 seconds (healthy)           8080/tcp                           mitra-m001-events
 445ce2eab588  ghcr.io/nsubrahm/payload:latest     "./application"          53 seconds ago   Up 10 seconds (healthy)           8080/tcp, 0.0.0.0:8084->8084/tcp   mitra-m001-inputs
