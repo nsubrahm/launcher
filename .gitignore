@@ -1,3 +1,7 @@
-*.csv
+launch/conf/
 .vscode
 .DS_Store
+.venv
+__pycache__
+*.json
+!config.json

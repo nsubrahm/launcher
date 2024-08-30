@@ -1,0 +1,8 @@
+{
+  "PROJECT_NAME": "M001",
+  "MACHINE_ID_CAPS": "M001",
+  "MACHINE_ID": "m001",
+  "sourceDir": "launch/config",
+  "templateDir" : "launch/templates",
+  "outputDir": "launch/conf"
+}
