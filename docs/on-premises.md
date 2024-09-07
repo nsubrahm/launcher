@@ -42,19 +42,19 @@ echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 
 ```bash
 cd $HOME
-wget https://github.com/nsubrahm/launcher/releases/download/latest/launch.tar.gz
-tar -xzf launch.tar.gz
-export PROJECT_HOME=$HOME/launch
-echo "export PROJECT_HOME=$HOME/launch" >> .profile
+export MTMT_VERSION=0.0.0
+wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher-v${MTMT_VERSION}.zip
+tar -xzf launcher-v${MTMT_VERSION}.zip
 ```
 
 ### Generate environment variables files
 
-3. Create folder `launch/conf`.
-4. (Optional) Modify `config.json` if required.
+3. (Optional) Modify `config.json` if required. See [Configuration file](#configuration-file) for details.
+4. Generate environment variables files with the commands below.
 
 ```bash
-cd ${PROJECT_HOME}
+mkdir launch/conf
+pip install -r scripts/requirements.txt
 python scripts/main.py
 ```
 
