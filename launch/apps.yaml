@@ -117,6 +117,27 @@ services:
       retries: 3
       start_period: 10s
 
+  mqttpd:
+    container_name: ${COMPOSE_PROJECT_NAME}-mqttpd
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mqtt-payload:${MQTT_PAYLOAD_TAG:-latest}
+    depends_on:
+      alerts:
+        condition: service_healthy
+      alarms:
+        condition: service_healthy
+    env_file:
+      - ./conf/common.env
+      - ./conf/mqttPayload.env
+      - ./conf/license.env
+    networks:
+      - broker
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+
   output:
     container_name: ${COMPOSE_PROJECT_NAME}-output
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/dashboard:${DASHBOARD_TAG:-latest}

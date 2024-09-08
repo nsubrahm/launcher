@@ -2,6 +2,7 @@
   "PROJECT_NAME": "M001",
   "MACHINE_ID_CAPS": "M001",
   "MACHINE_ID": "m001",
+  "MQTT_BROKER": "mqtt://test.mosquitto.org:1883",
   "sourceDir": "launch/config",
   "templateDir" : "launch/templates",
   "outputDir": "launch/conf"

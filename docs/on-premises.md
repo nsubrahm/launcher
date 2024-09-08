@@ -86,14 +86,15 @@ docker compose --env-file launch/conf/apps.env -f launch/apps.yaml up -d
 
 ```bash
 CONTAINER ID  IMAGE                               COMMAND                  CREATED          STATUS                            PORTS                              NAMES
-b8c838d6b903  ghcr.io/nsubrahm/dashboard:latest   "./entrypoint.sh"        53 seconds ago   Up 10 seconds (healthy)           1880/tcp, 0.0.0.0:8080->8080/tcp   mitra-m001-output
-3d150377b2ac  ghcr.io/nsubrahm/streamer:latest    "./application -Dqua…"   53 seconds ago   Up 10 seconds (healthy)           8080/tcp                           mitra-m001-events
-445ce2eab588  ghcr.io/nsubrahm/payload:latest     "./application"          53 seconds ago   Up 10 seconds (healthy)           8080/tcp, 0.0.0.0:8084->8084/tcp   mitra-m001-inputs
-c1464c886a2d  ghcr.io/nsubrahm/alarms:latest      "./application -Dqua…"   53 seconds ago   Up 16 seconds (healthy)           8080/tcp                           mitra-m001-alarms
-3612d418d682  ghcr.io/nsubrahm/alerts:latest      "./application -Dqua…"   53 seconds ago   Up 16 seconds (healthy)           8080/tcp                           mitra-m001-alerts
-3c00e581d9b0  ghcr.io/nsubrahm/limits:latest      "./application"          53 seconds ago   Up 27 seconds                     0.0.0.0:8083->8083/tcp             mitra-m001-limits
-b25eccc7cb22  confluentinc/ksqldb-server:latest   "/usr/bin/docker/run"    2 minutes ago    Up 2 minutes (healthy)            0.0.0.0:8088->8088/tcp             mitra-platform-ksqldb
-30675fa37b29  confluentinc/cp-kafka:latest        "/etc/confluent/dock…"   2 minutes ago    Up 2 minutes (healthy)            0.0.0.0:9092->9092/tcp             mitra-platform-broker
+b8c838d6b903  ghcr.io/nsubrahm/dashboard:latest    "./entrypoint.sh"        53 seconds ago   Up 10 seconds (healthy)           1880/tcp, 0.0.0.0:8080->8080/tcp   mitra-m001-output
+3d150377b2ac  ghcr.io/nsubrahm/streamer:latest     "./application -Dqua…"   53 seconds ago   Up 10 seconds (healthy)           8080/tcp                           mitra-m001-events
+445ce2eab588  ghcr.io/nsubrahm/payload:latest      "./application"          53 seconds ago   Up 10 seconds (healthy)           8080/tcp, 0.0.0.0:8084->8084/tcp   mitra-m001-inputs
+ce4434737fb0  ghcr.io/nsubrahm/mqtt-payload:latest "./application"          53 seconds ago   Up 10 seconds (healthy)                                              mitra-m001-mqttpd
+c1464c886a2d  ghcr.io/nsubrahm/alarms:latest       "./application -Dqua…"   53 seconds ago   Up 16 seconds (healthy)           8080/tcp                           mitra-m001-alarms
+3612d418d682  ghcr.io/nsubrahm/alerts:latest       "./application -Dqua…"   53 seconds ago   Up 16 seconds (healthy)           8080/tcp                           mitra-m001-alerts
+3c00e581d9b0  ghcr.io/nsubrahm/limits:latest       "./application"          53 seconds ago   Up 27 seconds                     0.0.0.0:8083->8083/tcp             mitra-m001-limits
+b25eccc7cb22  confluentinc/ksqldb-server:latest    "/usr/bin/docker/run"    2 minutes ago    Up 2 minutes (healthy)            0.0.0.0:8088->8088/tcp             mitra-platform-ksqldb
+30675fa37b29  confluentinc/cp-kafka:latest         "/etc/confluent/dock…"   2 minutes ago    Up 2 minutes (healthy)            0.0.0.0:9092->9092/tcp             mitra-platform-broker
 ```
 
 If any of the containers appear as `Unhealthy` in the list above, then shut down the applications and start again using the following commands.
@@ -135,6 +136,7 @@ The following configuration file can be set-up to generate environment variables
 | `PROJECT_NAME`    | Machine ID in upper case to distinguish deployments for multiple machines. Change this only if deploying for multiple machines. |
 | `MACHINE_ID_CAPS` | Machine ID in upper case typically used for application IDs, etc. Change this only if deploying for multiple machines.          |
 | `MACHINE_ID`      | Machine ID in lower case typically used for topic names, etc. Change this only if deploying for multiple machines.              |
+| `MQTT_BROKER`     | **Required** MQTT broker host                                                                                                   |
 | `sourceDir`       | **Do not change.** A folder to copy non-templated files.                                                                        |
 | `templateDir`     | **Do not change.** A folder to copy templated files.                                                                            |
 | `outputDir`       | A folder to save generated environment variable files. Changing this will impact the `docker compose` commands.                 |
