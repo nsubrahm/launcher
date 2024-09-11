@@ -6,7 +6,7 @@ services:
       - ./conf/common.env
       - ./conf/topics.env
     networks:
-      - broker
+      - mitra
 
   queris:
     container_name: ${COMPOSE_PROJECT_NAME}-queris
@@ -18,7 +18,7 @@ services:
       - ./conf/common.env
       - ./conf/queries.env
     networks:
-      - broker
+      - mitra
 
   limits:
     container_name: ${COMPOSE_PROJECT_NAME}-limits
@@ -32,7 +32,7 @@ services:
     ports:
       - "8083:8083"
     networks:
-      - broker
+      - mitra
 
   alerts:
     container_name: ${COMPOSE_PROJECT_NAME}-alerts
@@ -46,7 +46,7 @@ services:
       - ./conf/common.env
       - ./conf/alerts.env
     networks:
-      - broker
+      - mitra
     healthcheck:
       test: /work/health
       interval: 2s
@@ -66,7 +66,7 @@ services:
       - ./conf/common.env
       - ./conf/alarms.env
     networks:
-      - broker
+      - mitra
     healthcheck:
       test: /work/health
       interval: 2s
@@ -86,7 +86,7 @@ services:
       - ./conf/common.env
       - ./conf/events.env
     networks:
-      - broker
+      - mitra
     healthcheck:
       test: /work/health
       interval: 2s
@@ -109,7 +109,7 @@ services:
     ports:
       - "8084:8084"
     networks:
-      - broker
+      - mitra
     healthcheck:
       test: /work/health
       interval: 2s
@@ -130,7 +130,7 @@ services:
       - ./conf/mqttPayload.env
       - ./conf/license.env
     networks:
-      - broker
+      - mitra
     healthcheck:
       test: /work/health
       interval: 2s
@@ -150,9 +150,9 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - broker
+      - mitra
 
 networks:
-  broker:
+  mitra:
     external: true
-    name: broker
+    name: mitra

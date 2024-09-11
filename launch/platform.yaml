@@ -14,7 +14,7 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - broker
+      - mitra
 
   ksqldb:
     container_name: ${COMPOSE_PROJECT_NAME}-ksqldb
@@ -34,8 +34,16 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - broker
+      - mitra
+  
+  mqtt:
+    container_name: ${COMPOSE_PROJECT_NAME}-mqtt
+    image: eclipse-mosquitto:${MQTT_TAG:-latest}
+    ports:
+      - "1883:1883"
+    networks:
+      - mitra
 
 networks:
-  broker:
-    name: broker
+  mitra:
+    name: mitra

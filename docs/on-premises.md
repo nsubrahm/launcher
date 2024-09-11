@@ -31,18 +31,37 @@ The following steps will install Maintenance Mitra.
 
 > Contact us for value of `CR_PAT`.
 
+On a Linux machine.
+
 ```bash
 export CR_PAT=
 echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
+```
+
+On a Windows Power Shell terminal.
+
+```shell
+$env:CR_PAT = "your_token"
+$env:CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 ```
 
 ### Download
 
 2. Download and unzip application archive.
 
+On a Linux machine.
+
 ```bash
 cd $HOME
 export MTMT_VERSION=0.0.0
+wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher-v${MTMT_VERSION}.zip
+tar -xzf launcher-v${MTMT_VERSION}.zip
+```
+
+On a Windows Power Shell terminal.
+
+```shell
+$env:MTMT_VERSION = "0.0.0"
 wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher-v${MTMT_VERSION}.zip
 tar -xzf launcher-v${MTMT_VERSION}.zip
 ```
@@ -67,12 +86,13 @@ cd ${PROJECT_HOME}
 docker compose --env-file launch/conf/platform.env -f launch/platform.yaml up -d
 ```
 
-Run `docker ps` to see the containers `mitra-platform-kafka` and `mitra-platform-ksqldb` running in healthy status as shown below. It might take around 10 seconds or so for containers to appear healthy.
+Run `docker ps` to see the containers `mitra-platform-kafka`, `mitra-platform-ksqldb` and `mitra-platform-mqtt` running in healthy status as shown below. It might take around 10 seconds or so for containers to appear healthy.
 
 ```bash
 CONTAINER ID   IMAGE                               COMMAND                  CREATED          STATUS                    PORTS                    NAMES
 24a2b806b4d6   confluentinc/ksqldb-server:latest   "/usr/bin/docker/run"    28 seconds ago   Up 16 seconds (healthy)   0.0.0.0:8088->8088/tcp   mitra-platform-ksqldb
 d058aedd768f   confluentinc/cp-kafka:latest        "/etc/confluent/dock…"   28 seconds ago   Up 27 seconds (healthy)   0.0.0.0:9092->9092/tcp   mitra-platform-broker
+b163b8c9e712   eclipse-mosquitto:latest            "/docker-entrypoint.…"   40 seconds ago   Up 39 seconds             0.0.0.0:1883->1883/tcp   mitra-platform-mqtt
 ```
 
 6. Launch applications.
@@ -118,7 +138,7 @@ docker compose --env-file launch/conf/platform.env -f launch/platform.yaml down
 
 ## Configuration file
 
-The following configuration file can be set-up to generate environment variables and to control overall installation.
+The following configuration file can be set-up to generate environment variables and to control overall installation. It is **strongly recommended** to not change values of any of the parameters.
 
 ```json
 {
@@ -131,12 +151,11 @@ The following configuration file can be set-up to generate environment variables
 }
 ```
 
-| Key               | Description                                                                                                                     |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `PROJECT_NAME`    | Machine ID in upper case to distinguish deployments for multiple machines. Change this only if deploying for multiple machines. |
-| `MACHINE_ID_CAPS` | Machine ID in upper case typically used for application IDs, etc. Change this only if deploying for multiple machines.          |
-| `MACHINE_ID`      | Machine ID in lower case typically used for topic names, etc. Change this only if deploying for multiple machines.              |
-| `MQTT_BROKER`     | **Required** MQTT broker host                                                                                                   |
-| `sourceDir`       | **Do not change.** A folder to copy non-templated files.                                                                        |
-| `templateDir`     | **Do not change.** A folder to copy templated files.                                                                            |
-| `outputDir`       | A folder to save generated environment variable files. Changing this will impact the `docker compose` commands.                 |
+| Key               | Description                                                                |
+| ----------------- | -------------------------------------------------------------------------- |
+| `PROJECT_NAME`    | Machine ID in upper case to distinguish deployments for multiple machines. |
+| `MACHINE_ID_CAPS` | Machine ID in upper case typically used for application IDs, etc.          |
+| `MACHINE_ID`      | Machine ID in lower case typically used for topic names, etc.              |
+| `sourceDir`       | A folder to copy non-templated files.                                      |
+| `templateDir`     | A folder to copy templated files.                                          |
+| `outputDir`       | A folder to save generated environment variable files.                     |
