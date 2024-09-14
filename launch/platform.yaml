@@ -38,7 +38,7 @@ services:
   
   mqtt:
     container_name: ${COMPOSE_PROJECT_NAME}-mqtt
-    image: eclipse-mosquitto:${MQTT_TAG:-latest}
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mosquitto:${MQTT_PAYLOAD_TAG:-latest}
     ports:
       - "1883:1883"
     networks:
