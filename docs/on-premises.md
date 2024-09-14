@@ -54,16 +54,16 @@ On a Linux machine.
 ```bash
 cd $HOME
 export MTMT_VERSION=0.0.0
-wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher-v${MTMT_VERSION}.zip
-tar -xzf launcher-v${MTMT_VERSION}.zip
+wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher-v${MTMT_VERSION}.tar.gz
+tar -xzf launcher-v${MTMT_VERSION}.tar.gz
 ```
 
 On a Windows Power Shell terminal.
 
 ```shell
 $env:MTMT_VERSION = "0.0.0"
-wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher-v${MTMT_VERSION}.zip
-tar -xzf launcher-v${MTMT_VERSION}.zip
+wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher-v${MTMT_VERSION}.tar.gz
+tar -xzf launcher-v${MTMT_VERSION}.tar.gz
 ```
 
 ### Generate environment variables files
@@ -71,9 +71,10 @@ tar -xzf launcher-v${MTMT_VERSION}.zip
 3. (Optional) Modify `config.json` if required. See [Configuration file](#configuration-file) for details.
 4. Generate environment variables files with the commands below.
 
+On a Windows Power Shell and Linux terminals.
+
 ```bash
 mkdir launch/conf
-pip install -r scripts/requirements.txt
 python scripts/main.py
 ```
 
@@ -91,7 +92,7 @@ Run `docker ps` to see the containers `mitra-platform-kafka`, `mitra-platform-ks
 ```bash
 CONTAINER ID   IMAGE                               COMMAND                  CREATED          STATUS                    PORTS                    NAMES
 24a2b806b4d6   confluentinc/ksqldb-server:latest   "/usr/bin/docker/run"    28 seconds ago   Up 16 seconds (healthy)   0.0.0.0:8088->8088/tcp   mitra-platform-ksqldb
-d058aedd768f   confluentinc/cp-kafka:latest        "/etc/confluent/dock…"   28 seconds ago   Up 27 seconds (healthy)   0.0.0.0:9092->9092/tcp   mitra-platform-broker
+d058aedd768f   confluentinc/cp-kafka:7.7.0         "/etc/confluent/dock…"   28 seconds ago   Up 27 seconds (healthy)   0.0.0.0:9092->9092/tcp   mitra-platform-broker
 b163b8c9e712   eclipse-mosquitto:latest            "/docker-entrypoint.…"   40 seconds ago   Up 39 seconds             0.0.0.0:1883->1883/tcp   mitra-platform-mqtt
 ```
 
@@ -114,7 +115,7 @@ bbd2e88adc5f   ghcr.io/nsubrahm/streamer:latest       "./application -Dqua…"  
 b813b74d10cf   ghcr.io/nsubrahm/alarms:latest         "./application -Dqua…"   3 minutes ago   Up 3 minutes (healthy)     8080/tcp                           mitra-m001-alarms
 c10230d3eb36   ghcr.io/nsubrahm/limits:latest         "./application"          3 minutes ago   Up 3 minutes               0.0.0.0:8083->8083/tcp             mitra-m001-limits
 f6d4697d362e   confluentinc/ksqldb-server:latest      "/usr/bin/docker/run"    37 hours ago    Up 9 minutes (healthy)     0.0.0.0:8088->8088/tcp             mitra-platform-ksqldb
-c0e09243e7ab   confluentinc/cp-kafka:latest           "/etc/confluent/dock…"   37 hours ago    Up 9 minutes (healthy)     0.0.0.0:9092->9092/tcp             mitra-platform-broker
+c0e09243e7ab   confluentinc/cp-kafka:7.7.0            "/etc/confluent/dock…"   37 hours ago    Up 9 minutes (healthy)     0.0.0.0:9092->9092/tcp             mitra-platform-broker
 ```
 
 If any of the containers appear as `Unhealthy` in the list above, then shut down the applications and start again using the following commands.
