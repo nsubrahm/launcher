@@ -18,18 +18,16 @@ class EnvironmentFilesGenerator:
         self.check_folder_exists(self.templateDir)
         self.check_folder_exists(self.outputDir)
         
-        print(f"Reading templates from: {self.templateDir}")
-        print(f"Will write to {self.outputDir}")
+        print(f"Reading templates from {self.templateDir} and writing to {self.outputDir}")
         for template_file in os.listdir(self.templateDir):
           if template_file.endswith('.tmpl'):
-            print(f"Processing template file: {template_file}")
             template = self.env.get_template(template_file)
             output_content = template.render(**self.configValues)
             output_file_name = template_file.replace('.tmpl', '.env')
             output_file_path = os.path.join(self.outputDir, output_file_name)
             with open(output_file_path, 'w') as output_file:
                 output_file.write(output_content)
-            print(f"Generated .env file: {output_file_path}")
+            print(f"\tGenerated .env file {output_file_path} from template file {template_file}")
       except FileNotFoundError as f:
         raise f
       except Exception as e:
@@ -49,7 +47,7 @@ class EnvironmentFilesGenerator:
                 content = source_file.read()
             with open(target_file_path, 'w') as target_file:
                 target_file.write(content)
-            print(f"Copied .env file from {source_file_path} to {target_file_path}")
+            print(f"\tCopied .env file from {source_file_path} to {target_file_path}")
       except FileNotFoundError as f:
         raise f
       except Exception as e:

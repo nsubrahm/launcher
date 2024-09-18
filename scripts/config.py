@@ -13,6 +13,7 @@ class ConfigurationManager:
       with open(self.config_file_path, 'r') as file:
         config_values = json.load(file)
         self._validate_config(config_values)
+        print(f"Reading configuration from {self.config_file_path}")
         return config_values
     except json.JSONDecodeError as e:
       raise ValueError(f"Error decoding JSON from {self.config_file_path}: {e}")
