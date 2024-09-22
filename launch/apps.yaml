@@ -20,20 +20,6 @@ services:
     networks:
       - mitra
 
-  limits:
-    container_name: ${COMPOSE_PROJECT_NAME}-limits
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/limits:${LIMITS_TAG:-latest}
-    depends_on:
-      topics:
-        condition: service_completed_successfully
-    env_file:
-      - ./conf/common.env
-      - ./conf/limits.env
-    ports:
-      - "8083:8083"
-    networks:
-      - mitra
-
   alerts:
     container_name: ${COMPOSE_PROJECT_NAME}-alerts
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
@@ -94,63 +80,23 @@ services:
       retries: 3
       start_period: 10s
 
-  inputs:
-    container_name: ${COMPOSE_PROJECT_NAME}-inputs
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/payload:${PAYLOAD_TAG:-latest}
-    depends_on:
-      alerts:
-        condition: service_healthy
-      alarms:
-        condition: service_healthy
-    env_file:
-      - ./conf/common.env
-      - ./conf/payload.env
-      - ./conf/license.env
-    ports:
-      - "8084:8084"
-    networks:
-      - mitra
-    healthcheck:
-      test: /work/health
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
-
-  mqttpd:
-    container_name: ${COMPOSE_PROJECT_NAME}-mqttpd
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mqtt-payload:${MQTT_PAYLOAD_TAG:-latest}
-    depends_on:
-      alerts:
-        condition: service_healthy
-      alarms:
-        condition: service_healthy
-    env_file:
-      - ./conf/common.env
-      - ./conf/mqttPayload.env
-      - ./conf/license.env
-    networks:
-      - mitra
-    healthcheck:
-      test: /work/health
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
-
-  output:
-    container_name: ${COMPOSE_PROJECT_NAME}-output
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/dashboard:${DASHBOARD_TAG:-latest}
-    depends_on:
-      events:
-        condition: service_healthy
-    env_file:
-      - ./conf/common.env
-      - ./conf/dashboard.env
-    ports:
-      - "8080:8080"
-    networks:
-      - mitra
+  # dbdata:
+  #   container_name: ${COMPOSE_PROJECT_NAME}-dbdata
+  #   image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/dbwrte:${DB_WRITE_TAG:-latest}
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 3
+  #   env_file:
+  #     - ./conf/common.env
+  #     - ./conf/dbdata.env
+  #   networks:
+  #     - mitra
+  #   healthcheck:
+  #     test: /work/health
+  #     interval: 2s
+  #     timeout: 30s
+  #     retries: 3
+  #     start_period: 10s
 
 networks:
   mitra:

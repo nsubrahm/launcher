@@ -5,8 +5,8 @@ services:
     env_file:
       - ./conf/common.env
       - ./conf/broker.env
-    ports:
-      - "9092:9092"
+    # ports:
+    #   - "9092:9092"
     healthcheck:
       test: ["CMD", "kafka-topics", "--list", "--bootstrap-server", "localhost:9092"]
       interval: 2s
@@ -25,8 +25,8 @@ services:
     env_file:
       - ./conf/common.env
       - ./conf/ksql.env
-    ports:
-      - "8088:8088"
+    # ports:
+    #   - "8088:8088"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8088"]
       interval: 2s
@@ -39,8 +39,19 @@ services:
   mqtt:
     container_name: ${COMPOSE_PROJECT_NAME}-mqtt
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mosquitto:${MQTT_PAYLOAD_TAG:-latest}
+    # ports:
+    #   - "1883:1883"
+    networks:
+      - mitra
+
+  mysql:
+    container_name: ${COMPOSE_PROJECT_NAME}-mysql
+    image: mysql
     ports:
-      - "1883:1883"
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=r00t
+      - TZ=Asia/Kolkata
     networks:
       - mitra
 
