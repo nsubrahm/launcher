@@ -18,7 +18,7 @@ The pre-requisites for installation are as follows:
 
 1. A 64-bit Windows or a Linux server with minimum 1 core CPU and 4GB RAM to spare.
 2. Docker and Docker Compose are pre-installed.
-3. Python 3.x is installed.
+3. (_Optional, but recommended_) Python 3.x is installed.
 4. Internet connection should be available for the duration of installation (typically, 15 mins).
 
 ## Installation
@@ -68,7 +68,9 @@ tar -xzf launcher-v${MTMT_VERSION}.tar.gz
 
 ### Generate environment variables files
 
-3. (Optional) Modify `config.json` if required. See [Configuration file](#configuration-file) for details.
+The instructions in this section are are required only if defaults in [Configuration file](#configuration-file) are to be changed. This section maybe skipped. 
+
+3. Modify `config.json` if required. See [Configuration file](#configuration-file) for details.
 4. Generate environment variables files with the commands below.
 
 On a Windows Power Shell and Linux terminals.
@@ -96,14 +98,21 @@ d058aedd768f   confluentinc/cp-kafka:7.7.0         "/etc/confluent/dock…"   28
 b163b8c9e712   eclipse-mosquitto:latest            "/docker-entrypoint.…"   40 seconds ago   Up 39 seconds             0.0.0.0:1883->1883/tcp   mitra-platform-mqtt
 ```
 
-6. Launch applications.
+6. Launch base components.
+
+```bash
+cd ${PROJECT_HOME}
+docker compose --env-file launch/conf/base.env -f launch/base.yaml up -d
+```
+
+7. Launch applications.
 
 ```bash
 cd ${PROJECT_HOME}
 docker compose --env-file launch/conf/apps.env -f launch/apps.yaml up -d
 ```
 
-7. Check running containers with `docker ps`.
+8. Check running containers with `docker ps`.
 
 ```bash
 CONTAINER ID   IMAGE                                  COMMAND                  CREATED         STATUS                     PORTS                              NAMES
@@ -129,7 +138,7 @@ As a result of launching applications, two containers would have started and exi
 
 ### Clean-up
 
-8. _(Optional)_ Shut down the complete deployment.
+9. _(Optional)_ Shut down the complete deployment.
 
 ```bash
 cd ${PROJECT_HOME}
