@@ -20,6 +20,15 @@ services:
     networks:
       - mitra
 
+  tables:
+    container_name: ${COMPOSE_PROJECT_NAME}-tables
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/tables:${TABLES_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/tables.env
+    networks:
+      - mitra
+
   alerts:
     container_name: ${COMPOSE_PROJECT_NAME}-alerts
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
@@ -85,6 +94,8 @@ services:
     depends_on:
       topics:
         condition: service_completed_successfully
+      tables:
+        condition: service_completed_successfully
     deploy:
       mode: replicated
       replicas: 3
@@ -105,6 +116,8 @@ services:
     depends_on:
       topics:
         condition: service_completed_successfully
+      tables:
+        condition: service_completed_successfully
     deploy:
       mode: replicated
       replicas: 3
@@ -124,6 +137,8 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persist:${PERSIST_TAG:-latest}
     depends_on:
       topics:
+        condition: service_completed_successfully
+      tables:
         condition: service_completed_successfully
     deploy:
       mode: replicated

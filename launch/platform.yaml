@@ -42,12 +42,11 @@ services:
 
   mysql:
     container_name: ${COMPOSE_PROJECT_NAME}-mysql
-    image: mysql
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mysql:${MYSQL_PAYLOAD_TAG:-latest}
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=r00t
-      - TZ=Asia/Kolkata
+      - ./conf/common.env
     networks:
       - mitra
 
