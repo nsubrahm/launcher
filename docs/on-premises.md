@@ -52,7 +52,6 @@ $env:CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 On a Linux machine.
 
 ```bash
-cd $HOME
 export MTMT_VERSION=0.0.0
 wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher-v${MTMT_VERSION}.tar.gz
 tar -xzf launcher-v${MTMT_VERSION}.tar.gz
@@ -68,7 +67,9 @@ tar -xzf launcher-v${MTMT_VERSION}.tar.gz
 
 ### Generate environment variables files
 
-The instructions in this section are are required only if defaults in [Configuration file](#configuration-file) are to be changed. This section maybe skipped. 
+> Skip this section. Go to [Launch](#launch).
+
+The instructions in this section are are required only if defaults in [Configuration file](#configuration-file) are to be changed.
 
 3. Modify `config.json` if required. See [Configuration file](#configuration-file) for details.
 4. Generate environment variables files with the commands below.
@@ -85,46 +86,101 @@ python scripts/main.py
 5. Launch platform.
 
 ```bash
-cd ${PROJECT_HOME}
 docker compose --env-file launch/conf/platform.env -f launch/platform.yaml up -d
 ```
 
 Run `docker ps` to see the containers `mitra-platform-kafka`, `mitra-platform-ksqldb` and `mitra-platform-mqtt` running in healthy status as shown below. It might take around 10 seconds or so for containers to appear healthy.
 
 ```bash
-CONTAINER ID   IMAGE                               COMMAND                  CREATED          STATUS                    PORTS                    NAMES
-24a2b806b4d6   confluentinc/ksqldb-server:latest   "/usr/bin/docker/run"    28 seconds ago   Up 16 seconds (healthy)   0.0.0.0:8088->8088/tcp   mitra-platform-ksqldb
-d058aedd768f   confluentinc/cp-kafka:7.7.0         "/etc/confluent/dock…"   28 seconds ago   Up 27 seconds (healthy)   0.0.0.0:9092->9092/tcp   mitra-platform-broker
-b163b8c9e712   eclipse-mosquitto:latest            "/docker-entrypoint.…"   40 seconds ago   Up 39 seconds             0.0.0.0:1883->1883/tcp   mitra-platform-mqtt
+CONTAINER ID   IMAGE                               COMMAND                  CREATED          STATUS                            PORTS                 NAMES
+0360319462e3   confluentinc/ksqldb-server:latest   "/usr/bin/docker/run"    25 seconds ago   Up 3 seconds (healthy)                                  mitra-platform-ksqldb
+14ce6e95c1a4   confluentinc/cp-kafka:7.7.0         "/etc/confluent/dock…"   25 seconds ago   Up 24 seconds (healthy)           9092/tcp              mitra-platform-broker
+f3e50fd1f547   ghcr.io/nsubrahm/mysql:latest       "docker-entrypoint.s…"   25 seconds ago   Up 24 seconds                     3306/tcp, 33060/tcp   mitra-platform-mysql
+dd277840b7e2   ghcr.io/nsubrahm/mosquitto:latest   "/docker-entrypoint.…"   25 seconds ago   Up 24 seconds                     1883/tcp              mitra-platform-mqtt
 ```
 
 6. Launch base components.
 
 ```bash
-cd ${PROJECT_HOME}
 docker compose --env-file launch/conf/base.env -f launch/base.yaml up -d
 ```
 
-7. Launch applications.
+Check the list of containers running succesfully.
 
 ```bash
-cd ${PROJECT_HOME}
+CONTAINER ID   IMAGE                                  COMMAND                  CREATED          STATUS                            PORTS                              NAMES
+fcfd9fb58062   ghcr.io/nsubrahm/dashboard:latest      "./entrypoint.sh"        11 seconds ago   Up 9 seconds (health: starting)   1880/tcp, 0.0.0.0:8080->8080/tcp   mitra-base-output
+a355dafecb86   ghcr.io/nsubrahm/payload:latest        "./application"          11 seconds ago   Up 9 seconds (healthy)            8080/tcp, 0.0.0.0:8084->8084/tcp   mitra-base-inputs
+30b760242f85   ghcr.io/nsubrahm/limits:latest         "./application"          11 seconds ago   Up 9 seconds                      0.0.0.0:8083->8083/tcp             mitra-base-limits
+420f5ef933dd   ghcr.io/nsubrahm/mqtt-payload:latest   "./application"          11 seconds ago   Up 9 seconds                                                         mitra-base-mqttpd
+0360319462e3   confluentinc/ksqldb-server:latest      "/usr/bin/docker/run"    9 minutes ago    Up 8 minutes (healthy)                                            mitra-platform-ksqldb
+14ce6e95c1a4   confluentinc/cp-kafka:7.7.0            "/etc/confluent/dock…"   9 minutes ago    Up 9 minutes (healthy)            9092/tcp                           mitra-platform-broker
+f3e50fd1f547   ghcr.io/nsubrahm/mysql:latest          "docker-entrypoint.s…"   9 minutes ago    Up 9 minutes                      3306/tcp, 33060/tcp                mitra-platform-mysql
+dd277840b7e2   ghcr.io/nsubrahm/mosquitto:latest      "/docker-entrypoint.…"   9 minutes ago    Up 9 minutes                      1883/tcp                           mitra-platform-mqtt
+```
+
+7. Initialize applications.
+
+```bash
+docker compose --env-file launch/conf/init.env -f launch/init.yaml up -d
+```
+
+The containers launched by the above command starts the following containers. These containers stop after running. To see stopped containers, use `docker ps -a`. The following containers will be seen.
+
+```bash
+CONTAINER ID   IMAGE                                  COMMAND                  CREATED              STATUS                          PORTS                              NAMES
+cf0e0e1e4893   ghcr.io/nsubrahm/queries:latest        "/bin/sh -c 'curl -X…"   About a minute ago   Exited (0) 39 seconds ago                                          mitra-m001-init-queris
+be1935d9eeac   ghcr.io/nsubrahm/kafka-tools:latest    "/__cacert_entrypoin…"   About a minute ago   Exited (0) 42 seconds ago                                          mitra-m001-init-topics
+c61357f3dbf9   ghcr.io/nsubrahm/tables:latest         "docker-entrypoint.s…"   About a minute ago   Exited (0) About a minute ago                                      mitra-m001-init-tables
+```
+
+8. Launch applications.
+
+```bash
 docker compose --env-file launch/conf/apps.env -f launch/apps.yaml up -d
 ```
 
-8. Check running containers with `docker ps`.
+9. Check running containers with `docker ps`.
 
 ```bash
-CONTAINER ID   IMAGE                                  COMMAND                  CREATED         STATUS                     PORTS                              NAMES
-7fbd62ca4b4e   ghcr.io/nsubrahm/dashboard:latest      "./entrypoint.sh"        3 minutes ago   Up 2 minutes (healthy)     1880/tcp, 0.0.0.0:8080->8080/tcp   mitra-m001-output
-5f251e17dd7b   ghcr.io/nsubrahm/payload:latest        "./application"          3 minutes ago   Up 3 minutes (healthy)     8080/tcp, 0.0.0.0:8084->8084/tcp   mitra-m001-inputs
-bbd2e88adc5f   ghcr.io/nsubrahm/streamer:latest       "./application -Dqua…"   3 minutes ago   Up 3 minutes (healthy)     8080/tcp                           mitra-m001-events
-5e8a0bf5a84a   ghcr.io/nsubrahm/mqtt-payload:latest   "./application"          3 minutes ago   Up 3 minutes (healthy)                                        mitra-m001-mqttpd
-2d9bd018d2a5   ghcr.io/nsubrahm/alerts:latest         "./application -Dqua…"   3 minutes ago   Up 3 minutes (healthy)     8080/tcp                           mitra-m001-alerts
-b813b74d10cf   ghcr.io/nsubrahm/alarms:latest         "./application -Dqua…"   3 minutes ago   Up 3 minutes (healthy)     8080/tcp                           mitra-m001-alarms
-c10230d3eb36   ghcr.io/nsubrahm/limits:latest         "./application"          3 minutes ago   Up 3 minutes               0.0.0.0:8083->8083/tcp             mitra-m001-limits
-f6d4697d362e   confluentinc/ksqldb-server:latest      "/usr/bin/docker/run"    37 hours ago    Up 9 minutes (healthy)     0.0.0.0:8088->8088/tcp             mitra-platform-ksqldb
-c0e09243e7ab   confluentinc/cp-kafka:7.7.0            "/etc/confluent/dock…"   37 hours ago    Up 9 minutes (healthy)     0.0.0.0:9092->9092/tcp             mitra-platform-broker
+CONTAINER ID   IMAGE                                  COMMAND                  CREATED              STATUS                          PORTS
+           NAMES
+7050fca3806e   ghcr.io/nsubrahm/persist:latest        "./application"          About a minute ago   Up About a minute (unhealthy)
+           mitra-m001-apps-persistd-2
+5331053c73d5   ghcr.io/nsubrahm/persist:latest        "./application"          About a minute ago   Up About a minute (unhealthy)
+           mitra-m001-apps-persistr-2
+e342f18fb585   ghcr.io/nsubrahm/persist:latest        "./application"          About a minute ago   Up About a minute (unhealthy)
+           mitra-m001-apps-persistr-1
+959b0779ab81   ghcr.io/nsubrahm/persist:latest        "./application"          About a minute ago   Up About a minute (unhealthy)
+           mitra-m001-apps-persistm-1
+a4241bc13b09   ghcr.io/nsubrahm/persist:latest        "./application"          About a minute ago   Up About a minute (unhealthy)
+           mitra-m001-apps-persistd-3
+b5257f92d18a   ghcr.io/nsubrahm/persist:latest        "./application"          About a minute ago   Up About a minute (unhealthy)
+           mitra-m001-apps-persistd-1
+943181cd75b0   ghcr.io/nsubrahm/persist:latest        "./application"          About a minute ago   Up About a minute (unhealthy)
+           mitra-m001-apps-persistm-3
+de97b5b546df   ghcr.io/nsubrahm/persist:latest        "./application"          About a minute ago   Up About a minute (unhealthy)
+           mitra-m001-apps-persistr-3
+6e25b245e8b4   ghcr.io/nsubrahm/persist:latest        "./application"          About a minute ago   Up About a minute (unhealthy)
+           mitra-m001-apps-persistm-2
+d3ae46fa40c5   ghcr.io/nsubrahm/streamer:latest       "./application -Dqua…"   About a minute ago   Up About a minute (healthy)     8080/tcp
+           mitra-m001-apps-events
+55e6beed79bd   ghcr.io/nsubrahm/alarms:latest         "./application -Dqua…"   About a minute ago   Up About a minute (healthy)     8080/tcp
+           mitra-m001-apps-alarms
+b6fa39d561c7   ghcr.io/nsubrahm/alerts:latest         "./application -Dqua…"   About a minute ago   Up About a minute (healthy)     8080/tcp
+           mitra-m001-apps-alerts
+fcfd9fb58062   ghcr.io/nsubrahm/dashboard:latest      "./entrypoint.sh"        17 minutes ago       Up 17 minutes (healthy)         1880/tcp, 0.0.0.0:8080->8080/tcp   mitra-base-output
+a355dafecb86   ghcr.io/nsubrahm/payload:latest        "./application"          17 minutes ago       Up 17 minutes (healthy)         8080/tcp, 0.0.0.0:8084->8084/tcp   mitra-base-inputs
+30b760242f85   ghcr.io/nsubrahm/limits:latest         "./application"          17 minutes ago       Up 17 minutes                   0.0.0.0:8083->8083/tcp             mitra-base-limits
+420f5ef933dd   ghcr.io/nsubrahm/mqtt-payload:latest   "./application"          17 minutes ago       Up 17 minutes
+           mitra-base-mqttpd
+0360319462e3   confluentinc/ksqldb-server:latest      "/usr/bin/docker/run"    26 minutes ago       Up 26 minutes (healthy)
+           mitra-platform-ksqldb
+14ce6e95c1a4   confluentinc/cp-kafka:7.7.0            "/etc/confluent/dock…"   26 minutes ago       Up 26 minutes (healthy)         9092/tcp
+           mitra-platform-broker
+f3e50fd1f547   ghcr.io/nsubrahm/mysql:latest          "docker-entrypoint.s…"   26 minutes ago       Up 26 minutes                   3306/tcp, 33060/tcp                mitra-platform-mysql
+dd277840b7e2   ghcr.io/nsubrahm/mosquitto:latest      "/docker-entrypoint.…"   26 minutes ago       Up 26 minutes                   1883/tcp
+           mitra-platform-mqtt
 ```
 
 If any of the containers appear as `Unhealthy` in the list above, then shut down the applications and start again using the following commands.
@@ -133,8 +189,6 @@ If any of the containers appear as `Unhealthy` in the list above, then shut down
 docker compose --env-file launch/conf/apps.env -f launch/apps.yaml down
 docker compose --env-file launch/conf/apps.env -f launch/apps.yaml up -d
 ```
-
-As a result of launching applications, two containers would have started and exited successfully. These are `mitra-m001-topics` and `mitra-m001-queris`. These containers can be seen with `docker ps -a`.
 
 ### Clean-up
 

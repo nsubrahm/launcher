@@ -2,8 +2,6 @@ services:
   broker:
     container_name: ${COMPOSE_PROJECT_NAME}-broker
     image: confluentinc/cp-kafka:${KAFKA_TAG:-latest}
-    ports:
-      - "9092:9092"
     env_file:
       - ./conf/common.env
       - ./conf/broker.env
@@ -43,8 +41,6 @@ services:
   mysql:
     container_name: ${COMPOSE_PROJECT_NAME}-mysql
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mysql:${MYSQL_PAYLOAD_TAG:-latest}
-    ports:
-      - "3306:3306"
     environment:
       - ./conf/common.env
     networks:

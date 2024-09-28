@@ -37,12 +37,6 @@ services:
       - ./conf/license.env
     networks:
       - mitra
-    healthcheck:
-      test: /work/health
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
 
   output:
     container_name: ${COMPOSE_PROJECT_NAME}-output

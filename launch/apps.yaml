@@ -1,42 +1,8 @@
 services:
-  topics:
-    container_name: ${COMPOSE_PROJECT_NAME}-topics
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/kafka-tools:${KAFKA_TOOLS_TAG:-latest}
-    env_file:
-      - ./conf/common.env
-      - ./conf/topics.env
-    networks:
-      - mitra
-
-  queris:
-    container_name: ${COMPOSE_PROJECT_NAME}-queris
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/queries:${QUERIES_TAG:-latest}
-    depends_on:
-      topics:
-        condition: service_completed_successfully
-    env_file:
-      - ./conf/common.env
-      - ./conf/queries.env
-    networks:
-      - mitra
-
-  tables:
-    container_name: ${COMPOSE_PROJECT_NAME}-tables
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/tables:${TABLES_TAG:-latest}
-    env_file:
-      - ./conf/common.env
-      - ./conf/tables.env
-    networks:
-      - mitra
 
   alerts:
     container_name: ${COMPOSE_PROJECT_NAME}-alerts
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
-    depends_on:
-      topics:
-        condition: service_completed_successfully
-      queris:
-        condition: service_completed_successfully
     env_file:
       - ./conf/common.env
       - ./conf/alerts.env
@@ -52,11 +18,6 @@ services:
   alarms:
     container_name: ${COMPOSE_PROJECT_NAME}-alarms
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alarms:${ALARMS_TAG:-latest}
-    depends_on:
-      topics:
-        condition: service_completed_successfully
-      queris:
-        condition: service_completed_successfully
     env_file:
       - ./conf/common.env
       - ./conf/alarms.env
@@ -92,10 +53,10 @@ services:
   persistd:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persist:${PERSIST_TAG:-latest}
     depends_on:
-      topics:
-        condition: service_completed_successfully
-      tables:
-        condition: service_completed_successfully
+      alarms:
+        condition: service_healthy
+      alerts:
+        condition: service_healthy
     deploy:
       mode: replicated
       replicas: 3
@@ -114,10 +75,10 @@ services:
   persistr:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persist:${PERSIST_TAG:-latest}
     depends_on:
-      topics:
-        condition: service_completed_successfully
-      tables:
-        condition: service_completed_successfully
+      alarms:
+        condition: service_healthy
+      alerts:
+        condition: service_healthy
     deploy:
       mode: replicated
       replicas: 3
@@ -136,10 +97,10 @@ services:
   persistm:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persist:${PERSIST_TAG:-latest}
     depends_on:
-      topics:
-        condition: service_completed_successfully
-      tables:
-        condition: service_completed_successfully
+      alarms:
+        condition: service_healthy
+      alerts:
+        condition: service_healthy
     deploy:
       mode: replicated
       replicas: 3
