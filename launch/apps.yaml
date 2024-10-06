@@ -59,14 +59,14 @@ services:
         condition: service_healthy
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 1
     env_file:
       - ./conf/common.env
       - ./conf/persistData.env
     networks:
       - mitra
     healthcheck:
-      test: /work/health
+      test: ["CMD", "/nodejs/bin/node", "/health/index.js"]
       interval: 2s
       timeout: 30s
       retries: 3
@@ -81,14 +81,14 @@ services:
         condition: service_healthy
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 1
     env_file:
       - ./conf/common.env
       - ./conf/persistAlerts.env
     networks:
       - mitra
     healthcheck:
-      test: /work/health
+      test: ["CMD", "/nodejs/bin/node", "/health/index.js"]
       interval: 2s
       timeout: 30s
       retries: 3
@@ -103,14 +103,14 @@ services:
         condition: service_healthy
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 1
     env_file:
       - ./conf/common.env
       - ./conf/persistAlarms.env
     networks:
       - mitra
     healthcheck:
-      test: /work/health
+      test: ["CMD", "/nodejs/bin/node", "/health/index.js"]
       interval: 2s
       timeout: 30s
       retries: 3

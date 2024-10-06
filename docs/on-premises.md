@@ -140,7 +140,13 @@ c61357f3dbf9   ghcr.io/nsubrahm/tables:latest         "docker-entrypoint.s…"  
 docker compose --env-file launch/conf/apps.env -f launch/apps.yaml up -d
 ```
 
-9. Check running containers with `docker ps`.
+9. Launch gateway.
+
+```bash
+docker compose --env-file launch/conf/gateway.env -f launch/gateway.yaml up -d
+```
+
+10. Check running containers with `docker ps`.
 
 ```bash
 CONTAINER ID   IMAGE                                  COMMAND                  CREATED              STATUS                          PORTS

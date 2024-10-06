@@ -5,8 +5,6 @@ services:
     env_file:
       - ./conf/common.env
       - ./conf/limits.env
-    ports:
-      - "8083:8083"
     networks:
      - mitra
 
@@ -17,16 +15,8 @@ services:
       - ./conf/common.env
       - ./conf/payload.env
       - ./conf/license.env
-    ports:
-      - "8084:8084"
     networks:
       - mitra
-    healthcheck:
-      test: /work/health
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
 
   mqttpd:
     container_name: ${COMPOSE_PROJECT_NAME}-mqttpd
@@ -44,8 +34,6 @@ services:
     env_file:
       - ./conf/common.env
       - ./conf/dashboard.env
-    ports:
-      - "8080:8080"
     networks:
       - mitra
 
