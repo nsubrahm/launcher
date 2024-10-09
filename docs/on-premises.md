@@ -140,10 +140,10 @@ c61357f3dbf9   ghcr.io/nsubrahm/tables:latest         "docker-entrypoint.s…"  
 docker compose --env-file launch/conf/apps.env -f launch/apps.yaml up -d
 ```
 
-9. Launch gateway.
+9. Launch final services.
 
 ```bash
-docker compose --env-file launch/conf/gateway.env -f launch/gateway.yaml up -d
+docker compose --env-file launch/conf/final.env -f launch/final.yaml up -d
 ```
 
 10. Check running containers with `docker ps`.

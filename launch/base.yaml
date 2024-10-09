@@ -28,16 +28,6 @@ services:
     networks:
       - mitra
 
-  output:
-    container_name: ${COMPOSE_PROJECT_NAME}-output
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/ui:${UI_TAG:-latest}
-    env_file:
-      - ./conf/common.env
-    ports:
-      - "90:80"
-    networks:
-      - mitra
-
 networks:
   mitra:
     external: true
