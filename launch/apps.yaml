@@ -51,7 +51,7 @@ services:
       start_period: 10s
 
   persistd:
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persist:${PERSIST_TAG:-latest}
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistd:${PERSISTD_TAG:-latest}
     depends_on:
       alarms:
         condition: service_healthy
@@ -66,51 +66,7 @@ services:
     networks:
       - mitra
     healthcheck:
-      test: ["CMD", "/nodejs/bin/node", "/health/index.js"]
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
-
-  persistr:
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persist:${PERSIST_TAG:-latest}
-    depends_on:
-      alarms:
-        condition: service_healthy
-      alerts:
-        condition: service_healthy
-    deploy:
-      mode: replicated
-      replicas: 1
-    env_file:
-      - ./conf/common.env
-      - ./conf/persistAlerts.env
-    networks:
-      - mitra
-    healthcheck:
-      test: ["CMD", "/nodejs/bin/node", "/health/index.js"]
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
-
-  persistm:
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persist:${PERSIST_TAG:-latest}
-    depends_on:
-      alarms:
-        condition: service_healthy
-      alerts:
-        condition: service_healthy
-    deploy:
-      mode: replicated
-      replicas: 1
-    env_file:
-      - ./conf/common.env
-      - ./conf/persistAlarms.env
-    networks:
-      - mitra
-    healthcheck:
-      test: ["CMD", "/nodejs/bin/node", "/health/index.js"]
+      test: /work/health
       interval: 2s
       timeout: 30s
       retries: 3
