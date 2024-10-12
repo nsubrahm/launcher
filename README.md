@@ -1,6 +1,8 @@
 # Introduction
 
-Maintenance Mitra is an application to display machine parameters, detect alarm conditions and duration in near real-time from one machine to one user at a time. The application is launched as a Docker Compose stack. This application is available for free with default [license](#license).
+Maintenance Mitra is an application to display machine parameters, detect alert conditions and duration in near real-time from one machine to one user at a time. The application is launched as a Docker Compose stack. This application is available for free with default [license](#license).
+
+Typical use cases include capturing of data from CNC machines with FANUC, Mitsubishi, etc. controllers for discrete manufacturing to monitor the running condition of equipment. Or, MODBUS, OPC UA server, etc. in case of process manufacturing to monitor process efficiency.
 
 ![Screen-shot](./png/dashboard.png)
 
@@ -21,10 +23,9 @@ The diagram below shows the topology to install Maintenance Mitra application on
 
 ![on-premise](png/on-premise.png)
 
-1. The equipment, or a REST API client, publishes raw data to the `/data` endpoint.
+1. Raw data of an equipment can be published as a REST client to the `/data` endpoint.
 2. The console accesses the `/ui` endpoint to view the dashboard.
 3. The console may access the `/limits` endpoint to browse or set limits of the parameters published by the equipment or REST API client.
-4. The `/data`, `/limits` and `/ui` endpoints are hosted as Quarkus applications accessing Kafka broker as a Docker Compose stack. The Docker Compose stack is hosted on a physical or a virtual machine.
 
 ### Pre-requisites
 

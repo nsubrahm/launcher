@@ -1,0 +1,34 @@
+services:
+  limits:
+    container_name: ${COMPOSE_PROJECT_NAME}-limits
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/limits:${LIMITS_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/limits.env
+    networks:
+     - mitra
+
+  inputs:
+    container_name: ${COMPOSE_PROJECT_NAME}-inputs
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/payload:${PAYLOAD_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/payload.env
+      - ./conf/license.env
+    networks:
+      - mitra
+
+  mqttpd:
+    container_name: ${COMPOSE_PROJECT_NAME}-mqttpd
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mqtt-payload:${MQTT_PAYLOAD_TAG:-latest}
+    env_file:
+      - ./conf/common.env
+      - ./conf/mqttPayload.env
+      - ./conf/license.env
+    networks:
+      - mitra
+
+networks:
+  mitra:
+    external: true
+    name: mitra
