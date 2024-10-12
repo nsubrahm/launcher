@@ -59,7 +59,7 @@ services:
         condition: service_healthy
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 3
     env_file:
       - ./conf/common.env
       - ./conf/persistData.env
@@ -81,7 +81,7 @@ services:
         condition: service_healthy
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 3
     env_file:
       - ./conf/common.env
       - ./conf/persistAlerts.env
@@ -103,7 +103,7 @@ services:
         condition: service_healthy
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 3
     env_file:
       - ./conf/common.env
       - ./conf/persistAlarms.env
