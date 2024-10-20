@@ -8,23 +8,21 @@ services:
     networks:
      - mitra
 
-  inputs:
-    container_name: ${COMPOSE_PROJECT_NAME}-inputs
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/payload:${PAYLOAD_TAG:-latest}
+  httpin:
+    container_name: ${COMPOSE_PROJECT_NAME}-httpin
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/http-inputs:${HTTP_INPUTS_TAG:-latest}
     env_file:
       - ./conf/common.env
-      - ./conf/payload.env
-      - ./conf/license.env
+      - ./conf/httpPayload.env
     networks:
       - mitra
 
-  mqttpd:
-    container_name: ${COMPOSE_PROJECT_NAME}-mqttpd
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mqtt-payload:${MQTT_PAYLOAD_TAG:-latest}
+  mqttin:
+    container_name: ${COMPOSE_PROJECT_NAME}-mqttin
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mqtt-inputs:${MQTT_INPUTS_TAG:-latest}
     env_file:
       - ./conf/common.env
       - ./conf/mqttPayload.env
-      - ./conf/license.env
     networks:
       - mitra
 
