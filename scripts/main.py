@@ -14,7 +14,6 @@ def main():
     config_values = config_manager.get_config_values()
     e = EnvironmentFilesGenerator(config_values)
     e.generate_env_files()
-    e.copy_env_files()
 
   except FileNotFoundError as e:
     print(f"Error: File error - {e}")

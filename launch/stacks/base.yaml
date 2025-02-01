@@ -3,8 +3,8 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-limits
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/limits:${LIMITS_TAG:-latest}
     env_file:
-      - ./conf/common.env
-      - ./conf/limits.env
+      - ../conf/common.env
+      - ../conf/limits.env
     networks:
      - mitra
 
@@ -12,8 +12,8 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-httpin
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/http-inputs:${HTTP_INPUTS_TAG:-latest}
     env_file:
-      - ./conf/common.env
-      - ./conf/httpPayload.env
+      - ../conf/common.env
+      - ../conf/httpPayload.env
     networks:
       - mitra
 
@@ -21,8 +21,8 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-mqttin
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mqtt-inputs:${MQTT_INPUTS_TAG:-latest}
     env_file:
-      - ./conf/common.env
-      - ./conf/mqttPayload.env
+      - ../conf/common.env
+      - ../conf/mqttPayload.env
     networks:
       - mitra
 

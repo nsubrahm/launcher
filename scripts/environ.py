@@ -33,22 +33,3 @@ class EnvironmentFilesGenerator:
       except Exception as e:
         raise e
 
-    def copy_env_files(self):
-      try:
-        self.check_folder_exists(self.sourceDir)
-        self.check_folder_exists(self.outputDir)
-        print(f"Copying from {self.sourceDir} to {self.outputDir}")
-        
-        for file in os.listdir(self.sourceDir):
-          if file.endswith('.env'):
-            source_file_path = os.path.join(self.sourceDir, file)
-            target_file_path = os.path.join(self.outputDir, file)
-            with open(source_file_path, 'r') as source_file:
-                content = source_file.read()
-            with open(target_file_path, 'w') as target_file:
-                target_file.write(content)
-            print(f"\tCopied .env file from {source_file_path} to {target_file_path}")
-      except FileNotFoundError as f:
-        raise f
-      except Exception as e:
-        raise e

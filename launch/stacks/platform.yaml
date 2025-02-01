@@ -1,0 +1,85 @@
+services:
+  broker-1:
+    container_name: ${COMPOSE_PROJECT_NAME}-broker-1
+    image: confluentinc/cp-kafka:${KAFKA_TAG:-latest}
+    env_file:
+      - ../conf/common.env
+      - ../conf/broker-1.env
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--list", "--bootstrap-server", "localhost:9092"]
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    networks:
+      - mitra
+
+  broker-2:
+    container_name: ${COMPOSE_PROJECT_NAME}-broker-2
+    image: confluentinc/cp-kafka:${KAFKA_TAG:-latest}
+    env_file:
+      - ../conf/common.env
+      - ../conf/broker-2.env
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--list", "--bootstrap-server", "localhost:9092"]
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    networks:
+      - mitra
+
+  broker-3:
+    container_name: ${COMPOSE_PROJECT_NAME}-broker-3
+    image: confluentinc/cp-kafka:${KAFKA_TAG:-latest}
+    env_file:
+      - ../conf/common.env
+      - ../conf/broker-3.env
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--list", "--bootstrap-server", "localhost:9092"]
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    networks:
+      - mitra
+
+  ksqldb:
+    container_name: ${COMPOSE_PROJECT_NAME}-ksqldb
+    image: confluentinc/ksqldb-server:${KAFKA_SQLDB_TAG:-latest}
+    depends_on:
+      broker-1:
+        condition: service_healthy
+      broker-2:
+        condition: service_healthy
+      broker-3:
+        condition: service_healthy
+    env_file:
+      - ../conf/common.env
+      - ../conf/ksql.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088"]
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    networks:
+      - mitra
+  
+  mqtt:
+    container_name: ${COMPOSE_PROJECT_NAME}-mqtt
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mosquitto:${MQTT_PAYLOAD_TAG:-latest}
+    networks:
+      - mitra
+
+  mysql:
+    container_name: ${COMPOSE_PROJECT_NAME}-mysql
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mysql:${MYSQL_TAG:-latest}
+    environment:
+      - ../conf/common.env
+    networks:
+      - mitra
+
+networks:
+  mitra:
+    name: mitra
