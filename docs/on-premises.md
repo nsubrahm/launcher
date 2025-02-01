@@ -202,33 +202,28 @@ e1961119d1c7   ghcr.io/nsubrahm/mqtt-inputs:latest   "./application -Dqua…"   
 b43a183bed5f   ghcr.io/nsubrahm/mosquitto:latest     "/docker-entrypoint.…"   58 minutes ago       Up 58 minutes                     1883/tcp              mitra-platform-mqtt
 ```
 
-If any of the containers appear as `Unhealthy` in the list above, then shut down the applications and start again using the following commands.
-
-```bash
-docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml down
-docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml up -d
-```
-
 ### Clean-up
 
 10. _(Optional)_ Shut down the complete deployment.
 
 ```bash
 cd ${PROJECT_HOME}
-docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml down
+docker compose --env-file launch/conf/gateway.env  -f launch/stacks/gateway.yaml down
+docker compose --env-file launch/conf/apps.env     -f launch/stacks/apps.yaml down
+docker compose --env-file launch/conf/base.env     -f launch/stacks/base.yaml down
 docker compose --env-file launch/conf/platform.env -f launch/stacks/platform.yaml down
 ```
 
 ## Configuration file
 
-The following configuration file can be set-up to generate environment variables and to control overall installation. It is **strongly recommended** to not change values of any of the parameters.
+The following configuration file can be set-up to generate environment variables and to control overall installation. This configuration file will generate environment variables in `outputDir` for machine ID `m001` using templates from `templateDir`. The machine has `3` parameters as set in `NUM_PARAMETERS`.
 
 ```json
 {
   "PROJECT_NAME": "M001",
   "MACHINE_ID_CAPS": "M001",
   "MACHINE_ID": "m001",
-  "sourceDir": "launch/config",
+  "NUM_PARAMETERS": 3,
   "templateDir" : "launch/templates",
   "outputDir": "launch/conf"
 }
@@ -239,6 +234,6 @@ The following configuration file can be set-up to generate environment variables
 | `PROJECT_NAME`    | Machine ID in upper case to distinguish deployments for multiple machines. |
 | `MACHINE_ID_CAPS` | Machine ID in upper case typically used for application IDs, etc.          |
 | `MACHINE_ID`      | Machine ID in lower case typically used for topic names, etc.              |
-| `sourceDir`       | A folder to copy non-templated files.                                      |
+| `NUM_PARAMETERS`  | Number of parameters of the machine.                                       |
 | `templateDir`     | A folder to copy templated files.                                          |
 | `outputDir`       | A folder to save generated environment variable files.                     |

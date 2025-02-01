@@ -3,7 +3,6 @@ from jinja2 import Environment, FileSystemLoader
 
 class EnvironmentFilesGenerator:
     def __init__(self, configValues):
-      self.sourceDir = configValues['sourceDir']
       self.templateDir = configValues["templateDir"]
       self.outputDir = configValues["outputDir"]
       self.configValues = configValues

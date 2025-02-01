@@ -19,10 +19,16 @@ class ConfigurationManager:
       raise ValueError(f"Error decoding JSON from {self.config_file_path}: {e}")
 
   def _validate_config(self, config):
-    required_keys = ['PROJECT_NAME', 'MACHINE_ID_CAPS', "MACHINE_ID"]
+    required_keys = ['PROJECT_NAME', 'MACHINE_ID_CAPS', "MACHINE_ID", "NUM_PARAMETERS", "templateDir", "outputDir"]
     for key in required_keys:
       if key not in config:
         raise ValueError(f"Missing required key '{key}' in config file")
+    
+    if not os.path.exists(config['templateDir']):
+      raise FileNotFoundError(f"Template directory {config['templateDir']} not found.")
+    
+    if not os.path.exists(config['outputDir']):
+      raise FileNotFoundError(f"Output directory {config['outputDir']} not found.")
 
   def get_config_values(self):
     return {key: value for key, value in self.config_values.items()}

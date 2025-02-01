@@ -13,7 +13,7 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/http-inputs:${HTTP_INPUTS_TAG:-latest}
     env_file:
       - ../conf/common.env
-      - ../conf/httpPayload.env
+      - ../conf/httpInputs.env
     networks:
       - mitra
 
@@ -22,7 +22,7 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mqtt-inputs:${MQTT_INPUTS_TAG:-latest}
     env_file:
       - ../conf/common.env
-      - ../conf/mqttPayload.env
+      - ../conf/mqttInputs.env
     networks:
       - mitra
 
