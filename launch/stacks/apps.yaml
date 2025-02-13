@@ -1,11 +1,13 @@
 services:
 
   alerts:
-    container_name: ${COMPOSE_PROJECT_NAME}-alerts
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
     env_file:
       - ../conf/common.env
       - ../conf/alerts.env
+    deploy:
+      mode: replicated
+      replicas: 3
     networks:
       - mitra
     healthcheck:
@@ -16,13 +18,15 @@ services:
       start_period: 10s
 
   alarms:
-    container_name: ${COMPOSE_PROJECT_NAME}-alarms
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alarms:${ALARMS_TAG:-latest}
     env_file:
       - ../conf/common.env
       - ../conf/alarms.env
     networks:
       - mitra
+    deploy:
+      mode: replicated
+      replicas: 3
     healthcheck:
       test: /work/health
       interval: 2s
