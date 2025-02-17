@@ -47,11 +47,11 @@ Once installed, the application can be used immediately or with customizations.
 
 ### Quick start
 
-1. The application expects raw data at the `/data` endpoint via a HTTP `POST` call. For details on developing a REST API client application conforming to the payload, see [payload documentation](./docs/payload.md). You can test with a [REST client simulator](https://github.com/nsubrahm/simulators/tree/main/rest).
+1. The application expects raw data at the `http://localhost:80/data` endpoint via a HTTP `POST` call. For details on developing a REST API client application conforming to the payload, see [payload documentation](./docs/payload.md). You can test with a [REST client simulator](https://github.com/nsubrahm/simulators/tree/main/rest).
 
-2. To generate alerts on parameters of the payload, the limits of the parameters should be configured. For details on developing a REST API client conforming to payload, see [limits documentation](./docs/limits.md). If limits are not configured, then no alerts will be generated. However, the application can be still used.
+2. To generate alerts on parameters of the payload, the limits of the parameters should be configured by sending payload to `http://localhost:80/limits`. For details on developing a REST API client conforming to payload, see [limits documentation](./docs/limits.md). If limits are not configured, then no alerts will be generated. However, the application can be still used.
 
-3. Enter `http://localhost:8080/ui` in a browser to view the dashboard.
+3. Enter `http://localhost:80/ui` in a browser to view the dashboard.
 
 4. To apply a new license, edit `conf/license.key` file with new license key. Contact us for the new license key. 
 
