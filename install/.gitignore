@@ -1,0 +1,17 @@
+# Installation logs
+logs/
+*.log
+
+# Backup files
+backups/
+*.backup
+
+# State files
+install_state.yaml
+
+# Environment files
+*.env
+
+# IDE files
+.vscode/
+.idea/
