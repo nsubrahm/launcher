@@ -1,22 +1,5 @@
 services:
 
-  alerts:
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
-    env_file:
-      - ../conf/common.env
-      - ../conf/alerts.env
-    deploy:
-      mode: replicated
-      replicas: 3
-    networks:
-      - mitra
-    healthcheck:
-      test: /work/health
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
-
   alarms:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alarms:${ALARMS_TAG:-latest}
     env_file:
@@ -26,7 +9,24 @@ services:
       - mitra
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: ${REPLICAS:-1}
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+
+  alerts:
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
+    env_file:
+      - ../conf/common.env
+      - ../conf/alerts.env
+    deploy:
+      mode: replicated
+      replicas: ${REPLICAS:-1}
+    networks:
+      - mitra
     healthcheck:
       test: /work/health
       interval: 2s
@@ -45,72 +45,6 @@ services:
     env_file:
       - ../conf/common.env
       - ../conf/events.env
-    networks:
-      - mitra
-    healthcheck:
-      test: /work/health
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
-
-  persistd:
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistd:${PERSISTD_TAG:-latest}
-    depends_on:
-      alarms:
-        condition: service_healthy
-      alerts:
-        condition: service_healthy
-    deploy:
-      mode: replicated
-      replicas: 3
-    env_file:
-      - ../conf/common.env
-      - ../conf/persistData.env
-    networks:
-      - mitra
-    healthcheck:
-      test: /work/health
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
-
-  persistr:
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistr:${PERSISTR_TAG:-latest}
-    depends_on:
-      alarms:
-        condition: service_healthy
-      alerts:
-        condition: service_healthy
-    deploy:
-      mode: replicated
-      replicas: 3
-    env_file:
-      - ../conf/common.env
-      - ../conf/persistAlerts.env
-    networks:
-      - mitra
-    healthcheck:
-      test: /work/health
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
-
-  persistm:
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistm:${PERSISTM_TAG:-latest}
-    depends_on:
-      alarms:
-        condition: service_healthy
-      alerts:
-        condition: service_healthy
-    deploy:
-      mode: replicated
-      replicas: 3
-    env_file:
-      - ../conf/common.env
-      - ../conf/persistAlarms.env
     networks:
       - mitra
     healthcheck:
