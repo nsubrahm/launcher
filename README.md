@@ -47,8 +47,6 @@ The installation documentation has been reorganized into smaller, more focused d
 - [Clean-up Guide](docs/clean-up.md) - How to remove the application
 - [Quick Reference](docs/quick-reference.md) - Command cheat sheet
 
-For legacy documentation, see [on-premises installation](docs/on-premises.md).
-
 ## Usage
 
 Once installed, the application can be used immediately or with customizations.

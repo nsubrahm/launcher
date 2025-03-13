@@ -42,7 +42,7 @@ wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/
 tar -xzf launcher-v${MTMT_VERSION}.tar.gz
 ```
 
-## Generate Environment Variables Files
+## Configuration
 
 > Skip this section if [Configuration file](configuration.md) defaults are to be used.
 
@@ -58,7 +58,9 @@ python scripts/main.py
 
 The launch process involves several steps to set up different components of the system.
 
-### 1. Launch Platform
+### Launch Platform
+
+This is a one-time activity.
 
 ```bash
 docker compose --env-file launch/conf/platform.env -f launch/stacks/platform.yaml up -d
@@ -67,7 +69,9 @@ docker compose --env-file launch/conf/base.env     -f launch/stacks/base.yaml up
 docker compose --env-file launch/conf/gateway.env  -f launch/stacks/gateway.yaml up -d
 ```
 
-### 2. Initialize and Launch Applications
+### Launch Applications
+
+This step needs to be run as many times as machines are added. Before adding a new machine, generate configuration as described in [Configuration](configuration.md).
 
 ```bash
 docker compose --env-file launch/conf/init.env -f launch/stacks/init.yaml up -d
