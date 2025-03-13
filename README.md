@@ -37,7 +37,17 @@ The pre-requisites for installation are as follows:
 
 ### Install instructions
 
-See [here](docs/on-premises.md) for install instructions on on-premise machine.
+The installation documentation has been reorganized into smaller, more focused documents:
+
+- [Main Installation Guide](docs/main-installation.md) - Overview and quick start
+- [Detailed Installation Steps](docs/installation-steps.md) - Step-by-step instructions
+- [Configuration Guide](docs/configuration.md) - Configuration options
+- [Verification Guide](docs/verification.md) - How to verify installation
+- [Troubleshooting Guide](docs/troubleshooting.md) - Common issues and solutions
+- [Clean-up Guide](docs/clean-up.md) - How to remove the application
+- [Quick Reference](docs/quick-reference.md) - Command cheat sheet
+
+For legacy documentation, see [on-premises installation](docs/on-premises.md).
 
 ## Usage
 
