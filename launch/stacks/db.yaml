@@ -2,11 +2,6 @@ services:
 
   persistd:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistd:${PERSISTD_TAG:-latest}
-    depends_on:
-      alarms:
-        condition: service_healthy
-      alerts:
-        condition: service_healthy
     deploy:
       mode: replicated
       replicas: 3
@@ -24,11 +19,6 @@ services:
 
   persistr:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistr:${PERSISTR_TAG:-latest}
-    depends_on:
-      alarms:
-        condition: service_healthy
-      alerts:
-        condition: service_healthy
     deploy:
       mode: replicated
       replicas: 3
@@ -46,11 +36,6 @@ services:
 
   persistm:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistm:${PERSISTM_TAG:-latest}
-    depends_on:
-      alarms:
-        condition: service_healthy
-      alerts:
-        condition: service_healthy
     deploy:
       mode: replicated
       replicas: 3

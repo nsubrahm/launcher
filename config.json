@@ -3,6 +3,7 @@
   "MACHINE_ID_CAPS": "M001",
   "MACHINE_ID": "m001",
   "NUM_PARAMETERS": 3,
+  "NUM_MACHINES": 3,
   "templateDir" : "launch/templates",
   "outputDir": "launch/conf"
 }

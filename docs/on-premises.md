@@ -100,7 +100,7 @@ b43a183bed5f   ghcr.io/nsubrahm/mosquitto:latest   "/docker-entrypoint.…"   39
 6. Initialize applications.
 
 ```bash
-docker compose --env-file launch/conf/init.env -f launch/stacks/init.yaml up -d
+docker compose --env-file launch/conf/machines.env -f launch/stacks/machines.yaml up -d
 ```
 
 The containers launched by the above command starts the following containers. These containers exit after running. To see stopped containers, use `docker ps -a`. The following containers will be seen.
@@ -131,9 +131,10 @@ e1961119d1c7   ghcr.io/nsubrahm/mqtt-inputs:latest   "./application -Dqua…"   
 b43a183bed5f   ghcr.io/nsubrahm/mosquitto:latest     "/docker-entrypoint.…"   50 minutes ago   Up 50 minutes             1883/tcp              mitra-platform-mqtt
 ```
 
-8. Launch applications.
+8. Initialize and launch applications.
 
 ```bash
+docker compose --env-file launch/conf/init.env     -f launch/stacks/init.yaml up -d
 docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml up -d
 ```
 

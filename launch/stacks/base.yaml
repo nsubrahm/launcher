@@ -1,13 +1,4 @@
 services:
-  limits:
-    container_name: ${COMPOSE_PROJECT_NAME}-limits
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/limits:${LIMITS_TAG:-latest}
-    env_file:
-      - ../conf/common.env
-      - ../conf/limits.env
-    networks:
-     - mitra
-
   httpin:
     container_name: ${COMPOSE_PROJECT_NAME}-httpin
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/http-inputs:${HTTP_INPUTS_TAG:-latest}
@@ -19,7 +10,7 @@ services:
       interval: 2s
       timeout: 30s
       retries: 3
-      start_period: 10s      
+      start_period: 10s
     networks:
       - mitra
 
@@ -31,6 +22,35 @@ services:
       - ../conf/mqttInputs.env
     networks:
       - mitra
+
+  configs:
+    container_name: ${COMPOSE_PROJECT_NAME}-configs
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/configs:${CONFIGS_TAG:-latest}
+    env_file:
+      - ../conf/common.env
+      - ../conf/configs.env
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    networks:
+     - mitra
+
+  events:
+    container_name: ${COMPOSE_PROJECT_NAME}-events
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/events:${EVENTS_TAG:-latest}
+    env_file:
+      - ../conf/common.env
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    networks:
+     - mitra     
 
 networks:
   mitra:
