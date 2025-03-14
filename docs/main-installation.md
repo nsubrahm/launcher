@@ -2,6 +2,14 @@
 
 Quick installation guide for on-premise deployment of Maintenance Mitra.
 
+- [On-premises Installation Guide](#on-premises-installation-guide)
+  - [Prerequisites](#prerequisites)
+  - [Installation Overview](#installation-overview)
+  - [Configuration](#configuration)
+  - [Troubleshooting](#troubleshooting)
+  - [Clean-up](#clean-up)
+  - [Quick Reference](#quick-reference)
+
 ## Prerequisites
 - 64-bit Windows/Linux server (1+ CPU core, 4GB+ RAM)
 - Docker and Docker Compose

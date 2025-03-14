@@ -2,6 +2,13 @@
 
 This document provides instructions for cleaning up and removing Maintenance Mitra components from your system.
 
+- [Clean-up Guide](#clean-up-guide)
+  - [Stopping Services](#stopping-services)
+  - [Removing Containers](#removing-containers)
+  - [Complete Cleanup](#complete-cleanup)
+  - [Removing Docker Images](#removing-docker-images)
+  - [Cleanup Verification](#cleanup-verification)
+
 ## Stopping Services
 
 To stop all services without removing containers:

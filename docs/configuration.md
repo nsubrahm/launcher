@@ -1,6 +1,12 @@
 # Configuration Guide
 
 This document explains the configuration options for Maintenance Mitra.
+- [Configuration Guide](#configuration-guide)
+  - [Configuration File](#configuration-file)
+    - [Example Configuration](#example-configuration)
+    - [Configuration Parameters](#configuration-parameters)
+  - [Environment Variables Files](#environment-variables-files)
+    - [Generating Environment Files](#generating-environment-files)
 
 ## Configuration File
 
@@ -13,7 +19,8 @@ The main configuration file is `config.json`. This file contains settings that c
   "PROJECT_NAME": "MITRA",
   "MACHINE_ID_CAPS": "M001",
   "MACHINE_ID": "m001",
-  "NUM_PARAMETERS": 3,
+  "NUM_PARAMETERS": 5,
+  "NUM_MACHINES": 3,
   "templateDir": "launch/templates",
   "outputDir": "launch/conf"
 }
@@ -21,14 +28,14 @@ The main configuration file is `config.json`. This file contains settings that c
 
 ### Configuration Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| `PROJECT_NAME` | Machine ID in upper case to distinguish deployments for multiple machines. |
-| `MACHINE_ID_CAPS` | Machine ID in upper case typically used for application IDs, etc. |
-| `MACHINE_ID` | Machine ID in lower case typically used for topic names, etc. |
-| `NUM_PARAMETERS` | Number of parameters of the machine. |
-| `templateDir` | A folder to copy templated files. |
-| `outputDir` | A folder to save generated environment variable files. |
+| Parameter         | Description                                                                |
+| ----------------- | -------------------------------------------------------------------------- |
+| `PROJECT_NAME`    | Machine ID in upper case to distinguish deployments for multiple machines. |
+| `MACHINE_ID_CAPS` | Machine ID in upper case typically used for application IDs, etc.          |
+| `MACHINE_ID`      | Machine ID in lower case typically used for topic names, etc.              |
+| `NUM_PARAMETERS`  | Number of parameters of the machine.                                       |
+| `templateDir`     | A folder to copy templated files.                                          |
+| `outputDir`       | A folder to save generated environment variable files.                     |
 
 ## Environment Variables Files
 

@@ -2,6 +2,14 @@
 
 This document guides you through verifying that your Maintenance Mitra installation is working correctly.
 
+- [Installation Verification](#installation-verification)
+  - [Container Status Verification](#container-status-verification)
+  - [Expected Container List](#expected-container-list)
+  - [Accessing the Web Interface](#accessing-the-web-interface)
+  - [Health Check Endpoints](#health-check-endpoints)
+  - [Common Verification Issues](#common-verification-issues)
+  - [Next Steps](#next-steps)
+
 ## Container Status Verification
 
 After completing all installation steps, verify that all containers are running properly:
@@ -20,12 +28,12 @@ All containers should show either "healthy" status or "(healthy)" in their statu
 
 ## Expected Container List
 
-| Container Type | Expected Containers |
-|----------------|---------------------|
-| Platform | mitra-platform-kafka, mitra-platform-ksqldb, mitra-platform-mqtt, mitra-platform-mysql |
-| Base | mitra-base-limits, mitra-base-httpin, mitra-base-mqttin |
-| Applications | mitra-m001-apps-events, mitra-m001-apps-alarms, mitra-m001-apps-alerts, mitra-m001-apps-persist* |
-| Final | mitra-final-gateway |
+| Container Type | Expected Containers                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------ |
+| Platform       | mitra-platform-kafka, mitra-platform-ksqldb, mitra-platform-mqtt, mitra-platform-mysql           |
+| Base           | mitra-base-limits, mitra-base-httpin, mitra-base-mqttin                                          |
+| Applications   | mitra-m001-apps-events, mitra-m001-apps-alarms, mitra-m001-apps-alerts, mitra-m001-apps-persist* |
+| Final          | mitra-final-gateway                                                                              |
 
 ## Accessing the Web Interface
 

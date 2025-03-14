@@ -2,6 +2,16 @@
 
 This document provides solutions for common issues encountered during installation and operation of Maintenance Mitra.
 
+- [Troubleshooting Guide](#troubleshooting-guide)
+  - [Common Installation Issues](#common-installation-issues)
+    - [Container Registry Login Issues](#container-registry-login-issues)
+    - [Container Startup Failures](#container-startup-failures)
+    - [Environment Variable Issues](#environment-variable-issues)
+  - [Checking Container Status](#checking-container-status)
+  - [Restarting Components](#restarting-components)
+  - [Common Error Messages](#common-error-messages)
+  - [Getting Help](#getting-help)
+
 ## Common Installation Issues
 
 ### Container Registry Login Issues
@@ -63,11 +73,11 @@ docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml restar
 
 ## Common Error Messages
 
-| Error Message | Possible Cause | Solution |
-|---------------|----------------|----------|
-| `Error response from daemon: pull access denied` | Invalid or expired container registry credentials | Re-login to container registry |
-| `Error: No such container` | Container name is incorrect or container doesn't exist | Verify container name with `docker ps -a` |
-| `Error: Bind for 0.0.0.0:80: unexpected error` | Port 80 is already in use | Stop other services using port 80 or change the port mapping |
+| Error Message                                    | Possible Cause                                         | Solution                                                     |
+| ------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------ |
+| `Error response from daemon: pull access denied` | Invalid or expired container registry credentials      | Re-login to container registry                               |
+| `Error: No such container`                       | Container name is incorrect or container doesn't exist | Verify container name with `docker ps -a`                    |
+| `Error: Bind for 0.0.0.0:80: unexpected error`   | Port 80 is already in use                              | Stop other services using port 80 or change the port mapping |
 
 ## Getting Help
 

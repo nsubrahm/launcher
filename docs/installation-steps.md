@@ -2,6 +2,19 @@
 
 Detailed step-by-step installation instructions for Maintenance Mitra.
 
+- [Installation Steps](#installation-steps)
+  - [Login to GHCR](#login-to-ghcr)
+    - [Linux](#linux)
+    - [Windows PowerShell](#windows-powershell)
+  - [Download](#download)
+    - [Linux](#linux-1)
+    - [Windows PowerShell](#windows-powershell-1)
+  - [Configuration](#configuration)
+  - [Launch](#launch)
+    - [Launch Platform](#launch-platform)
+    - [Launch Applications](#launch-applications)
+  - [Next Steps](#next-steps)
+
 ## Login to GHCR
 
 1. Log in to `ghcr.io` container registry.
