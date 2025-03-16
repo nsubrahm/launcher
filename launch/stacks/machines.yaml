@@ -8,8 +8,8 @@ services:
     networks:
       - mitra
 
-  queris:
-    container_name: ${COMPOSE_PROJECT_NAME}-queris
+  queries:
+    container_name: ${COMPOSE_PROJECT_NAME}-queries
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/queries:${QUERIES_TAG:-latest}
     depends_on:
       topics:
