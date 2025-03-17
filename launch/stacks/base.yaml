@@ -1,7 +1,7 @@
 services:
   httpin:
     container_name: ${COMPOSE_PROJECT_NAME}-httpin
-    image: nsubrahm/http-inputs:${HTTP_INPUTS_TAG:-latest}
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/http-inputs:${HTTP_INPUTS_TAG:-latest}
     env_file:
       - ../conf/common.env
       - ../conf/httpInputs.env
