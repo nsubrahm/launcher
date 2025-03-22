@@ -5,6 +5,7 @@ services:
     env_file:
       - ../conf/license.env
       - ../conf/common.env
+      - ../conf/ui.env
     ports:
       - "80:80"
     networks:

@@ -1,0 +1,57 @@
+services:
+
+  persistd:
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistd:${PERSISTD_TAG:-latest}
+    deploy:
+      mode: replicated
+      replicas: 3
+    env_file:
+      - ../conf/common.env
+      - ../conf/persistData.env
+    networks:
+      - mitra
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+
+  persistr:
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistr:${PERSISTR_TAG:-latest}
+    deploy:
+      mode: replicated
+      replicas: 3
+    env_file:
+      - ../conf/common.env
+      - ../conf/persistAlerts.env
+    networks:
+      - mitra
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+
+  persistm:
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistm:${PERSISTM_TAG:-latest}
+    deploy:
+      mode: replicated
+      replicas: 3
+    env_file:
+      - ../conf/common.env
+      - ../conf/persistAlarms.env
+    networks:
+      - mitra
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+
+networks:
+  mitra:
+    external: true
+    name: mitra

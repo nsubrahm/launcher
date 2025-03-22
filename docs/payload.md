@@ -2,6 +2,10 @@
 
 The payload should be published to the `/data` endpoint as a JSON payload with a `POST` request. If the payload is valid, then a `202` status message is returned. This indicates that the message is valid and has been published to Kafka for downstream consumption. Else, a `400` message is published to indicate the payload is invalid.
 
+- [Overview](#overview)
+- [Rate limiting](#rate-limiting)
+- [Payload format](#payload-format)
+
 > With the default license, The `/data` endpoint limits upto `3600` requests in a time window of `1 hour` at one go.
 
 - [Overview](#overview)
