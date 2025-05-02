@@ -16,7 +16,7 @@ services:
 
   ksqldb:
     container_name: ${COMPOSE_PROJECT_NAME}-ksqldb
-    image: confluentinc/ksqldb-server:${KAFKA_SQLDB_TAG:-latest}
+    image: confluentinc/cp-ksqldb-server:${KAFKA_SQLDB_TAG:-latest}
     depends_on:
       broker:
         condition: service_healthy
