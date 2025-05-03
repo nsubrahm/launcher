@@ -5,9 +5,6 @@ services:
     env_file:
       - ../conf/common.env
       - ../conf/httpInputs.env
-    deploy:
-      mode: replicated
-      replicas: 3
     healthcheck:
       test: /work/health
       interval: 2s
@@ -31,9 +28,6 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/configs:${CONFIGS_TAG:-latest}
     env_file:
       - ../conf/configs.env
-    deploy:
-      mode: replicated
-      replicas: 3      
     healthcheck:
       test: /work/health
       interval: 2s
@@ -48,9 +42,6 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/events:${EVENTS_TAG:-latest}
     env_file:
       - ../conf/common.env
-    deploy:
-      mode: replicated
-      replicas: 3      
     healthcheck:
       test: /work/health
       interval: 2s
