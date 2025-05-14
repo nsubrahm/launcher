@@ -42,6 +42,7 @@ Download and unzip application archive.
 ### Linux
 
 ```bash
+mkdir launcher && cd launcher
 export MTMT_VERSION=0.0.0
 wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher-v${MTMT_VERSION}.tar.gz
 tar -xzf launcher-v${MTMT_VERSION}.tar.gz
