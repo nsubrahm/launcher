@@ -77,10 +77,10 @@ The launch process involves several steps to set up different components of the 
 This is a one-time activity.
 
 ```bash
-docker compose --env-file launch/conf/platform.env -f launch/stacks/platform.yaml up -d
+docker compose --env-file launch/conf/core.env -f launch/stacks/core.yaml up -d
 docker compose --env-file launch/conf/machines.env -f launch/stacks/machines.yaml up -d
-docker compose --env-file launch/conf/base.env     -f launch/stacks/base.yaml up -d
-docker compose --env-file launch/conf/gateway.env  -f launch/stacks/gateway.yaml up -d
+docker compose --env-file launch/conf/base.env -f launch/stacks/base.yaml up -d
+docker compose --env-file launch/conf/gateway.env -f launch/stacks/gateway.yaml up -d
 ```
 
 ### Launch Applications
