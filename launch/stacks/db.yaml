@@ -1,4 +1,4 @@
-services:
+services: 
 
   persistd:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistd:${PERSISTD_TAG:-latest}
@@ -6,7 +6,6 @@ services:
       mode: replicated
       replicas: 3
     env_file:
-      - ../conf/common.env
       - ../conf/persistData.env
     networks:
       - mitra
@@ -23,7 +22,6 @@ services:
       mode: replicated
       replicas: 3
     env_file:
-      - ../conf/common.env
       - ../conf/persistAlerts.env
     networks:
       - mitra
@@ -40,7 +38,6 @@ services:
       mode: replicated
       replicas: 3
     env_file:
-      - ../conf/common.env
       - ../conf/persistAlarms.env
     networks:
       - mitra

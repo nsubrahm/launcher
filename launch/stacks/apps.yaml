@@ -3,8 +3,6 @@ services:
   alarms:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alarms:${ALARMS_TAG:-latest}
     env_file:
-      - ../conf/common.env
-      - ../conf/newMachine.env
       - ../conf/alarms.env
     networks:
       - mitra
@@ -21,8 +19,6 @@ services:
   alerts:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
     env_file:
-      - ../conf/common.env
-      - ../conf/newMachine.env
       - ../conf/alerts.env
     deploy:
       mode: replicated

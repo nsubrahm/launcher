@@ -1,11 +1,9 @@
-# MQTT configuration
 MQTT_HOST=mqtt
 MQTT_PORT=1883
 MQTT_SSL=false
 MQTT_CLIENT_ID=mitra-{{ MACHINE_ID }}
 MQTT_TOPIC=/machines/{{ MACHINE_ID }}/data
 MQTT_QOS=1
-# Kafka configuration
 KAFKA_CLIENT_ID_PFX={{ MACHINE_ID }}
-# Misc
 GRACE_TIME=5000
+TZ="Asia/Kolkata"
