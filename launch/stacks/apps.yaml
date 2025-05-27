@@ -32,6 +32,22 @@ services:
       retries: 3
       start_period: 10s
 
+  collector:
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/collector:${COLLECTOR_TAG:-latest}
+    env_file:
+      - ../conf/collector.env
+    deploy:
+      mode: replicated
+      replicas: ${REPLICAS:-1}
+    networks:
+      - mitra
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s      
+
 networks:
   mitra:
     external: true
