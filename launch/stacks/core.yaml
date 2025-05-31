@@ -34,7 +34,7 @@ services:
   
   mqtt:
     container_name: ${COMPOSE_PROJECT_NAME}-mqtt
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mosquitto:${MQTT_PAYLOAD_TAG:-latest}
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mosquitto:${MOSQUITTO_TAG:-latest}
     env_file:
       - ../conf/general.env
     networks:

@@ -4,7 +4,7 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistd:${PERSISTD_TAG:-latest}
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: ${REPLICAS:-1}
     env_file:
       - ../conf/persistData.env
     networks:
@@ -20,7 +20,7 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistr:${PERSISTR_TAG:-latest}
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: ${REPLICAS:-1}
     env_file:
       - ../conf/persistAlerts.env
     networks:
@@ -36,7 +36,7 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistm:${PERSISTM_TAG:-latest}
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: ${REPLICAS:-1}
     env_file:
       - ../conf/persistAlarms.env
     networks:
