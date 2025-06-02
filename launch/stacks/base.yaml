@@ -1,25 +1,15 @@
 services:
-  httpin:
-    container_name: ${COMPOSE_PROJECT_NAME}-httpin
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/http-inputs:${HTTP_INPUTS_TAG:-latest}
+  mqttin:
+    container_name: ${COMPOSE_PROJECT_NAME}-mqttin
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mqtt-inputs:${MQTT_INPUTS_TAG:-latest}
     env_file:
-      - ../conf/common.env
-      - ../conf/httpInputs.env
+      - ../conf/mqttInputs.env
     healthcheck:
       test: /work/health
       interval: 2s
       timeout: 30s
       retries: 3
       start_period: 10s
-    networks:
-      - mitra
-
-  mqttin:
-    container_name: ${COMPOSE_PROJECT_NAME}-mqttin
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mqtt-inputs:${MQTT_INPUTS_TAG:-latest}
-    env_file:
-      - ../conf/common.env
-      - ../conf/mqttInputs.env
     networks:
       - mitra
 
@@ -36,20 +26,6 @@ services:
       start_period: 10s
     networks:
      - mitra
-
-  events:
-    container_name: ${COMPOSE_PROJECT_NAME}-events
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/events:${EVENTS_TAG:-latest}
-    env_file:
-      - ../conf/common.env
-    healthcheck:
-      test: /work/health
-      interval: 2s
-      timeout: 30s
-      retries: 3
-      start_period: 10s
-    networks:
-     - mitra     
 
 networks:
   mitra:

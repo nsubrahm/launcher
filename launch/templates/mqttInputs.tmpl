@@ -5,7 +5,14 @@ MQTT_SSL=false
 MQTT_CLIENT_ID=mitra-{{ MACHINE_ID }}
 MQTT_TOPIC=/machines/{{ MACHINE_ID }}/data
 MQTT_QOS=1
+
 # Kafka configuration
 KAFKA_CLIENT_ID_PFX={{ MACHINE_ID }}
-# Misc
+KAFKA_BOOTSTRAP_SERVERS=broker:29092
+
+# Quarkus
+QUARKUS_MANAGEMENT_PORT=44444
+
+# Application
 GRACE_TIME=5000
+TZ="Asia/Kolkata"

@@ -1,12 +1,11 @@
-services:
+services: 
 
   persistd:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistd:${PERSISTD_TAG:-latest}
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: ${REPLICAS:-1}
     env_file:
-      - ../conf/common.env
       - ../conf/persistData.env
     networks:
       - mitra
@@ -21,9 +20,8 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistr:${PERSISTR_TAG:-latest}
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: ${REPLICAS:-1}
     env_file:
-      - ../conf/common.env
       - ../conf/persistAlerts.env
     networks:
       - mitra
@@ -38,9 +36,8 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persistm:${PERSISTM_TAG:-latest}
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: ${REPLICAS:-1}
     env_file:
-      - ../conf/common.env
       - ../conf/persistAlarms.env
     networks:
       - mitra

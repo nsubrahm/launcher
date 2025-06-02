@@ -1,10 +1,28 @@
 services:
+  httpin:
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/http-inputs:${HTTP_INPUTS_TAG:-latest}
+    env_file:
+      - ../conf/httpInputs.env
+    deploy:
+      mode: replicated
+      replicas: ${REPLICAS:-1}      
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    networks:
+      mitra:
+        aliases:
+          - ${MACHINE_ID:-default}-httpin
 
   alarms:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alarms:${ALARMS_TAG:-latest}
+    depends_on:
+      httpin:
+        condition: service_healthy
     env_file:
-      - ../conf/common.env
-      - ../conf/newMachine.env
       - ../conf/alarms.env
     networks:
       - mitra
@@ -20,9 +38,10 @@ services:
 
   alerts:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/alerts:${ALERTS_TAG:-latest}
+    depends_on:
+      httpin:
+        condition: service_healthy    
     env_file:
-      - ../conf/common.env
-      - ../conf/newMachine.env
       - ../conf/alerts.env
     deploy:
       mode: replicated
@@ -35,6 +54,31 @@ services:
       timeout: 30s
       retries: 3
       start_period: 10s
+
+  collector:
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/collector:${COLLECTOR_TAG:-latest}
+    depends_on:
+      httpin:
+        condition: service_healthy
+      alarms:
+        condition: service_healthy
+      alerts:
+        condition: service_healthy    
+    env_file:
+      - ../conf/collector.env
+    deploy:
+      mode: replicated
+      replicas: ${REPLICAS:-1}
+    networks:
+      mitra:
+        aliases:
+          - ${MACHINE_ID:-default}-collector
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s      
 
 networks:
   mitra:

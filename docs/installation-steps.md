@@ -77,10 +77,10 @@ The launch process involves several steps to set up different components of the 
 This is a one-time activity.
 
 ```bash
-docker compose --env-file launch/conf/platform.env -f launch/stacks/platform.yaml up -d
-docker compose --env-file launch/conf/machines.env -f launch/stacks/machines.yaml up -d
-docker compose --env-file launch/conf/base.env     -f launch/stacks/base.yaml up -d
-docker compose --env-file launch/conf/gateway.env  -f launch/stacks/gateway.yaml up -d
+source launch/conf/core.env && docker compose --env-file launch/conf/core.env-f launch/stacks/core.yaml up -d
+source launch/conf/machines.env && docker compose --env-file launch/conf/machines.env -f launch/stacks/machines.yaml up -d
+source launch/conf/base.env && docker compose --env-file launch/conf/base.env -f launch/stacks/base.yaml up -d
+source launch/conf/gateway.env && docker compose --env-file -f launch/conf/gateway.env launch/stacks/gateway.yaml up -d
 ```
 
 ### Launch Applications
@@ -88,9 +88,9 @@ docker compose --env-file launch/conf/gateway.env  -f launch/stacks/gateway.yaml
 This step needs to be run as many times as machines are added. Before adding a new machine, generate configuration as described in [Configuration](configuration.md).
 
 ```bash
-docker compose --env-file launch/conf/init.env -f launch/stacks/init.yaml up -d
-docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml up -d
-docker compose --env-file launch/conf/db.env   -f launch/stacks/db.yaml up -d
+source launch/conf/init.env && docker compose -f launch/stacks/init.yaml up -d
+source launch/conf/apps.env && docker compose -f launch/stacks/apps.yaml up -d
+source launch/conf/db.env && docker compose -f launch/stacks/db.yaml up -d
 ```
 
 Verify all containers are running with `docker ps`.
