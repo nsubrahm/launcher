@@ -30,8 +30,8 @@ All containers should show either "healthy" status or "(healthy)" in their statu
 
 | Container Type | Expected Containers                                                                              |
 | -------------- | ------------------------------------------------------------------------------------------------ |
-| Platform       | mitra-platform-kafka, mitra-platform-ksqldb, mitra-platform-mqtt, mitra-platform-mysql           |
-| Base           | mitra-base-limits, mitra-base-httpin, mitra-base-mqttin                                          |
+| Platform       | mitra-platform-kafka, mitra-platform-ksqldb, mitra-platform-mysql                                |
+| Base           | mitra-base-limits, mitra-base-httpin                                                             |
 | Applications   | mitra-m001-apps-events, mitra-m001-apps-alarms, mitra-m001-apps-alerts, mitra-m001-apps-persist* |
 | Final          | mitra-final-gateway                                                                              |
 
