@@ -18,6 +18,14 @@ services:
     networks:
       - mitra
 
+  dbconfig:
+    container_name: ${COMPOSE_PROJECT_NAME}-dbconfig
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/dbconfig:${DBCONFIG_TAG:-latest}
+    env_file:
+      - ../conf/dbconfig.env
+    networks:
+      - mitra
+
 networks:
   mitra:
     external: true
