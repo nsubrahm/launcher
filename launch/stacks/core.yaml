@@ -48,6 +48,23 @@ services:
     networks:
       - mitra
 
+  bouncer:
+    container_name: ${COMPOSE_PROJECT_NAME}-bouncer
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/bouncer:${BOUNCER_TAG:-latest}
+    depends_on:
+      tscaledb:
+        condition: service_healthy
+    env_file:
+      - ../conf/general.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    networks:
+      - mitra
+
 networks:
   mitra:
     name: mitra
