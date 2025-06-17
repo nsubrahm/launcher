@@ -34,7 +34,7 @@ services:
 
   tscaledb:
     container_name: ${COMPOSE_PROJECT_NAME}-tscaledb
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/tsacledb:${TSCALEDB_TAG:-latest}
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/tscaledb:${TSCALEDB_TAG:-latest}
     env_file:
       - ../conf/general.env
     healthcheck:
@@ -43,6 +43,8 @@ services:
       timeout: 30s
       retries: 3
       start_period: 10s
+    volumes:
+      - /mnt/pg:/mnt/pg
     networks:
       - mitra
 

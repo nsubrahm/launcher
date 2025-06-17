@@ -1,5 +1,6 @@
 {
   "PROJECT_NAME": "M001",
+  "SCHEMA_NAME": "org1",
   "MACHINE_ID_CAPS": "M001",
   "MACHINE_ID": "m001",
   "NUM_PARAMETERS": 5,
