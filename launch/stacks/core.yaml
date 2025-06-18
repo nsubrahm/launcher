@@ -57,7 +57,7 @@ services:
     env_file:
       - ../conf/general.env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -h tscaledb"]
       interval: 2s
       timeout: 30s
       retries: 3
