@@ -78,6 +78,25 @@ services:
       interval: 2s
       timeout: 30s
       retries: 3
+      start_period: 10s
+
+  persist:
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persist:${PERSIST_TAG:-latest}
+    depends_on:
+      collector:
+        condition: service_healthy
+    env_file:
+      - ../conf/persist.env
+    deploy:
+      mode: replicated
+      replicas: ${REPLICAS:-1}
+    networks:
+      - mitra
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
       start_period: 10s      
 
 networks:
