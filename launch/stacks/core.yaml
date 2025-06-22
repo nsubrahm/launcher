@@ -32,11 +32,36 @@ services:
     networks:
       - mitra
 
-  mysql:
-    container_name: ${COMPOSE_PROJECT_NAME}-mysql
-    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/mysql:${MYSQL_TAG:-latest}
+  tscaledb:
+    container_name: ${COMPOSE_PROJECT_NAME}-tscaledb
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/tscaledb:${TSCALEDB_TAG:-latest}
     env_file:
       - ../conf/general.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - /mnt/pg:/mnt/pg
+    networks:
+      - mitra
+
+  bouncer:
+    container_name: ${COMPOSE_PROJECT_NAME}-bouncer
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/bouncer:${BOUNCER_TAG:-latest}
+    depends_on:
+      tscaledb:
+        condition: service_healthy
+    env_file:
+      - ../conf/general.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h tscaledb"]
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
     networks:
       - mitra
 
