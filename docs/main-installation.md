@@ -1,36 +1,61 @@
-# On-premises Installation Guide
+# Main Installation Guide
 
-Quick installation guide for on-premise deployment of Maintenance Mitra.
+This guide provides a concise overview for installing and launching Maintenance Mitra using the new configuration management approach.
 
-- [On-premises Installation Guide](#on-premises-installation-guide)
+- [Main Installation Guide](#main-installation-guide)
   - [Prerequisites](#prerequisites)
-  - [Installation Overview](#installation-overview)
-  - [Configuration](#configuration)
-  - [Troubleshooting](#troubleshooting)
-  - [Clean-up](#clean-up)
-  - [Quick Reference](#quick-reference)
+  - [Installation Workflow](#installation-workflow)
+  - [Configuration Management](#configuration-management)
+  - [Launching Stacks](#launching-stacks)
+  - [Next Steps](#next-steps)
 
 ## Prerequisites
-- 64-bit Windows/Linux server (1+ CPU core, 4GB+ RAM)
+
+- 64-bit Windows or Linux server (1+ CPU core, 4GB+ RAM)
 - Docker and Docker Compose
-- Python 3.x (recommended)
-- Internet connection during installation (~15 mins)
+- Python 3.x (for configuration rendering)
+- Internet connection during installation
 
-## Installation Overview
-1. [Login to Container Registry](installation-steps.md#login-to-ghcr)
-2. [Download Application](installation-steps.md#download)
-3. [Configure Environment](installation-steps.md#generate-environment-variables-files)
-4. [Launch Services](installation-steps.md#launch)
-5. [Verify Installation](verification.md)
+## Installation Workflow
 
-## Configuration
-See [Configuration Guide](configuration.md) for detailed configuration options.
+1. **Login to Container Registry**  
+   Authenticate with `ghcr.io` to pull images.
 
-## Troubleshooting
-See [Troubleshooting Guide](troubleshooting.md) for common issues and solutions.
+2. **Download Application**  
+   Download and extract the launcher package.
 
-## Clean-up
-See [Clean-up Guide](clean-up.md) for instructions on removing the application.
+3. **Configure Environment**  
+   Edit template files in `launch/templates/` as needed, then render to `.env` files in `launch/conf/`.
 
-## Quick Reference
-See [Quick Reference](quick-reference.md) for commonly used commands.
+4. **Launch Services**  
+   Use Docker Compose stack files in `launch/stacks/` with the generated `.env` files.
+
+5. **Verify Installation**  
+   Check that all containers are running and healthy.
+
+## Configuration Management
+
+- All configuration is managed via environment variable templates (`.tmpl` files).
+- Render templates to `.env` files in `launch/conf/` (manually or via script).
+- Adjust machine-specific or environment-specific settings in the templates before rendering.
+
+See [Configuration Guide](configuration.md) for details.
+
+## Launching Stacks
+
+Launch each stack using its corresponding `.env` and YAML file. Example:
+
+```bash
+docker compose --env-file launch/conf/core.env -f launch/stacks/core.yaml up -d
+docker compose --env-file launch/conf/base.env -f launch/stacks/base.yaml up -d
+docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml up -d
+```
+
+Repeat for additional machines or components as needed.
+
+## Next Steps
+
+- [Verify your installation](verification.md)
+- [Customize configuration](configuration.md)
+- [Troubleshoot issues](troubleshooting.md)
+- [Reference commands](quick-reference.md)

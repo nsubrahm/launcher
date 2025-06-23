@@ -1,46 +1,35 @@
 # Installation Steps
 
-Detailed step-by-step installation instructions for Maintenance Mitra.
+Step-by-step instructions for installing and launching Maintenance Mitra using the new configuration management approach.
 
 - [Installation Steps](#installation-steps)
-  - [Login to GHCR](#login-to-ghcr)
-    - [Linux](#linux)
-    - [Windows PowerShell](#windows-powershell)
-  - [Download](#download)
-    - [Linux](#linux-1)
-    - [Windows PowerShell](#windows-powershell-1)
-  - [Configuration](#configuration)
-  - [Launch](#launch)
-    - [Launch Platform](#launch-platform)
-    - [Launch Applications](#launch-applications)
+  - [Login to Container Registry](#login-to-container-registry)
+  - [Download Application](#download-application)
+  - [Configuration Management](#configuration-management)
+  - [Launching Stacks](#launching-stacks)
   - [Next Steps](#next-steps)
 
-## Login to GHCR
+## Login to Container Registry
 
-1. Log in to `ghcr.io` container registry.
+Authenticate with `ghcr.io` to pull required images.
 
-> Contact us for value of `CR_PAT`.
-
-### Linux
-
+**Linux:**
 ```bash
-export CR_PAT=
+export CR_PAT=<token>
 echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 ```
 
-### Windows PowerShell
-
-```shell
-$env:CR_PAT = "your_token"
+**Windows PowerShell:**
+```powershell
+$env:CR_PAT = "<token>"
 $env:CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 ```
 
-## Download
+## Download Application
 
-Download and unzip application archive.
+Download and extract the launcher package.
 
-### Linux
-
+**Linux:**
 ```bash
 mkdir launcher && cd launcher
 export MTMT_VERSION=0.0.0
@@ -48,32 +37,43 @@ wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/
 tar -xzf launcher-v${MTMT_VERSION}.tar.gz
 ```
 
-### Windows PowerShell
-
-```shell
+**Windows PowerShell:**
+```powershell
 $env:MTMT_VERSION = "0.0.0"
 wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher-v${MTMT_VERSION}.tar.gz
 tar -xzf launcher-v${MTMT_VERSION}.tar.gz
 ```
 
-## Configuration
+## Configuration Management
 
-> Skip this section if [Configuration file](configuration.md) defaults are to be used.
-
-1. Modify `config.json` if required. See [Configuration file](configuration.md) for details.
-2. Generate environment variables files with the commands below.
+1. Edit template files in `launch/templates/` as needed (e.g., set `MACHINE_ID`, `SCHEMA_NAME`, etc).
+2. Render templates to `.env` files in `launch/conf/` (manually or using a script):
 
 ```bash
-mkdir launch/conf
+mkdir -p launch/conf
 python scripts/main.py
 ```
 
-## Launch
+See [Configuration Guide](configuration.md) for details.
 
-The launch process involves several steps to set up different components of the system.
+## Launching Stacks
 
-### Launch Platform
+Start each stack using its `.env` and YAML file:
 
+```bash
+docker compose --env-file launch/conf/core.env -f launch/stacks/core.yaml up -d
+docker compose --env-file launch/conf/machines.env -f launch/stacks/machines.yaml up -d
+docker compose --env-file launch/conf/base.env -f launch/stacks/base.yaml up -d
+docker compose --env-file launch/conf/gateway.env -f launch/stacks/gateway.yaml up -d
+```
+
+For each machine, repeat configuration and launch for `init.yaml`, `apps.yaml`, etc.
+
+## Next Steps
+
+- [Verify your installation](verification.md)
+- [Customize configuration](configuration.md)
+- [Troubleshoot issues](troubleshooting.md)
 This is a one-time activity.
 
 ```bash

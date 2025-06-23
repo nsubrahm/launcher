@@ -1,18 +1,21 @@
 # Configuration Guide
 
-This document explains the configuration options for Maintenance Mitra.
+This guide explains how to manage configuration for Maintenance Mitra using templates and environment files.
+
 - [Configuration Guide](#configuration-guide)
-  - [Configuration File](#configuration-file)
-    - [Example Configuration](#example-configuration)
-    - [Configuration Parameters](#configuration-parameters)
-  - [Environment Variables Files](#environment-variables-files)
-    - [Generating Environment Files](#generating-environment-files)
+  - [Templates and Environment Files](#templates-and-environment-files)
+  - [Configuration Parameters](#configuration-parameters)
+  - [Generating Environment Files](#generating-environment-files)
 
-## Configuration File
+## Templates and Environment Files
 
-The main configuration file is `config.json`. This file contains settings that control how the application is deployed.
+- All configuration is managed via environment variable templates (`.tmpl` files) in `launch/templates/`.
+- Templates are rendered (manually or via script) to produce `.env` files in `launch/conf/`.
+- Each stack YAML file in `launch/stacks/` references one or more `.env` files.
 
-### Example Configuration
+## Configuration Parameters
+
+The main configuration file (for automated rendering) is `config.json`. Example:
 
 ```json
 {
@@ -26,31 +29,28 @@ The main configuration file is `config.json`. This file contains settings that c
 }
 ```
 
-### Configuration Parameters
-
 | Parameter         | Description                                                                |
 | ----------------- | -------------------------------------------------------------------------- |
-| `PROJECT_NAME`    | Machine ID in upper case to distinguish deployments for multiple machines. |
-| `MACHINE_ID_CAPS` | Machine ID in upper case typically used for application IDs, etc.          |
-| `MACHINE_ID`      | Machine ID in lower case typically used for topic names, etc.              |
-| `NUM_PARAMETERS`  | Number of parameters of the machine.                                       |
-| `templateDir`     | A folder to copy templated files.                                          |
-| `outputDir`       | A folder to save generated environment variable files.                     |
+| `PROJECT_NAME`    | Project or deployment name.                                                |
+| `MACHINE_ID_CAPS` | Machine ID in upper case (for app IDs, etc).                              |
+| `MACHINE_ID`      | Machine ID in lower case (for topic names, etc).                           |
+| `NUM_PARAMETERS`  | Number of machine parameters.                                              |
+| `NUM_MACHINES`    | Number of machines (for multi-machine setups).                             |
+| `templateDir`     | Directory containing template files.                                       |
+| `outputDir`       | Directory for generated `.env` files.                                      |
 
-## Environment Variables Files
+## Generating Environment Files
 
-The configuration process generates several environment variable files that are used by different components of the system:
+To generate `.env` files from templates:
 
-1. `platform.env` - Environment variables for the platform components
-2. `machines.env` - Environment variables for machine initialization
-3. `base.env` - Environment variables for base components
-4. `init.env` - Environment variables for initialization components
-5. `apps.env` - Environment variables for application components
-6. `db.env` - Environment variables for database components
-7. `gateway.env` - Environment variables for gateway components
+```bash
+mkdir -p launch/conf
+python scripts/main.py
+```
 
-### Generating Environment Files
+This will read `config.json` and render all templates in `templateDir` to `.env` files in `outputDir`.
 
+Edit the templates or `config.json` as needed for your deployment.
 To generate the environment variable files:
 
 ```bash

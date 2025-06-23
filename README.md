@@ -1,74 +1,88 @@
-# Introduction
+# Maintenance Mitra: Launch & Configuration Management
 
-Maintenance Mitra is an application to display machine parameters, detect alert conditions and duration in near real-time from one machine to one user at a time. The application is launched as a Docker Compose stack. This application is available for free with default [license](#license).
+Maintenance Mitra is a modular, containerized application for real-time machine data monitoring, alerting, and dashboarding. The system is orchestrated using Docker Compose, with configuration managed via environment templates and stack files.
 
-Typical use cases include capturing of data from CNC machines with FANUC, Mitsubishi, etc. controllers for discrete manufacturing to monitor the running condition of equipment. Or, MODBUS, OPC UA server, etc. in case of process manufacturing to monitor process efficiency.
+## Overview
 
-![Screen-shot](./png/dashboard.png)
+Maintenance Mitra is designed for rapid deployment and flexible configuration. The launch process is managed through a set of templates and configuration files, allowing you to tailor deployments for different environments and machine setups.
 
-- [Introduction](#introduction)
-  - [On-premise installation](#on-premise-installation)
-    - [Pre-requisites](#pre-requisites)
-    - [Install instructions](#install-instructions)
-  - [Usage](#usage)
-    - [Quick start](#quick-start)
-    - [Customization](#customization)
-  - [License](#license)
+**Key Features:**
+- Modular Docker Compose stacks for core services, machine-specific apps, and supporting infrastructure.
+- Configuration driven by environment variable templates (`.tmpl` files) and generated `.env` files.
+- Easy customization for machine IDs, database schemas, partitioning, and more.
+- Supports both quick-start and advanced, multi-machine scenarios.
 
-This repository documents installation and usage of Maintenance Mitra on on-premise.
+## Directory Structure
 
-## On-premise installation
+- `launch/templates/` – Environment variable templates (`.tmpl`) for all services.
+- `launch/conf/` – Generated `.env` files for each service and stack.
+- `launch/stacks/` – Docker Compose YAML files for each stack (core, base, apps, etc).
+- `docs/` – Additional documentation.
 
-The diagram below shows the topology to install Maintenance Mitra application on the on-premises server.
+## Installation & Launch
 
-![on-premise](png/on-premise.png)
+### 1. Pre-requisites
 
-1. Raw data of an equipment can be published as a REST client to the `/data` endpoint.
-2. The console accesses the `/ui` endpoint to view the dashboard.
-3. The console may access the `/limits` endpoint to browse or set limits of the parameters published by the equipment or REST API client.
+- 64-bit Windows or Linux server with at least 1 CPU core and 4GB RAM.
+- Docker and Docker Compose installed.
+- Internet access during installation.
 
-### Pre-requisites
+### 2. Configuration Management
 
-The pre-requisites for installation are as follows:
+All configuration is managed via environment variable files. Templates in `launch/templates/` are rendered (manually or via scripts) to produce `.env` files in `launch/conf/`. These `.env` files are referenced by the Docker Compose stack files in `launch/stacks/`.
 
-1. A 64-bit Windows or a Linux server with minimum 1 core CPU and 4GB RAM to spare.
-2. Docker and Docker Compose are pre-installed.
-3. Internet connection should be available for the duration of installation (typically, 15 mins).
+**Typical configuration steps:**
+1. Copy and customize the relevant `.tmpl` files in `launch/templates/` for your deployment (e.g., set `MACHINE_ID`, `SCHEMA_NAME`, etc).
+2. Render templates to `.env` files in `launch/conf/` (can be done manually or with a script).
+3. Review and adjust stack YAML files in `launch/stacks/` if needed.
 
-### Install instructions
+### 3. Launching the Application
 
-The installation documentation has been reorganized into smaller, more focused documents:
+Each stack can be launched independently or in sequence, depending on your use case.
 
-- [Main Installation Guide](docs/main-installation.md) - Overview and quick start
-- [Detailed Installation Steps](docs/installation-steps.md) - Step-by-step instructions
-- [Configuration Guide](docs/configuration.md) - Configuration options
-- [Verification Guide](docs/verification.md) - How to verify installation
-- [Troubleshooting Guide](docs/troubleshooting.md) - Common issues and solutions
-- [Clean-up Guide](docs/clean-up.md) - How to remove the application
-- [Quick Reference](docs/quick-reference.md) - Command cheat sheet
+**Example:**
+```sh
+cd launch/stacks
+docker compose -f core.yaml up -d
+docker compose -f base.yaml up -d
+docker compose -f apps.yaml up -d
+```
+- `core.yaml` – Core infrastructure (Kafka, KSQL, DB, etc).
+- `base.yaml` – Base configuration service.
+- `apps.yaml` – Machine-specific application stack.
+
+**For multi-machine setups:**  
+Repeat the configuration and launch steps for each machine, customizing the templates and `.env` files as needed.
+
+### 4. Customization
+
+- To add or modify machines, adjust the relevant templates and regenerate `.env` files.
+- To change partitioning, replication, or other Kafka/DB settings, edit the corresponding `.tmpl` and re-render.
+- For advanced scenarios, compose or extend stack YAML files as required.
+
+### 5. License Management
+
+The application uses a license key for rate-limiting and feature control.  
+- The default license is in `conf/license.env`.
+- To upgrade, replace the key in this file.
 
 ## Usage
 
-Once installed, the application can be used immediately or with customizations.
+- **Data Ingestion:** Send POST requests to `/data` endpoint.
+- **Dashboard:** Access `/ui` in your browser.
+- **Limits Configuration:** Use `/limits` endpoint for parameter limits.
 
-> In either mode - quick start or customizations - the default license key will apply. See [License](#license) for more details.
+See `docs/` for payload formats and advanced usage.
 
-### Quick start
+## Troubleshooting & Support
 
-1. The application expects raw data at the `http://localhost:80/data` endpoint via a HTTP `POST` call. For details on developing a REST API client application conforming to the payload, see [payload documentation](./docs/payload.md). You can test with a [REST client simulator](https://github.com/nsubrahm/simulators/tree/main/rest).
-
-2. To generate alerts on parameters of the payload, the limits of the parameters should be configured by sending payload to `http://localhost:80/limits`. For details on developing a REST API client conforming to payload, see [limits documentation](./docs/limits.md). If limits are not configured, then no alerts will be generated. However, the application can be still used.
-
-3. Enter `http://localhost:80/ui` in a browser to view the dashboard.
-
-4. To apply a new license, edit `conf/license.key` file with new license key. Contact us for the new license key. 
-
-### Customization
-
-1. Only dashboard customization is supported. Contact us for development of new dashboard. Once the dashboard is customised, rest of the steps are same as the ones for quick start.
+- Check container logs for errors: `docker compose logs <service>`
+- Ensure all `.env` files are present and correctly rendered.
+- For further help, see `docs/troubleshooting.md`.
 
 ## License
 
-By default, this application implements rate-limiting such that, a maximum of `3600` requests can be sent in a time window of `1 hour` - whichever is earlier. For example, if a machine publishes data every second, then the machine can keep publishing continuously upto a maximum of `3600` requests (`1*3600=3600`) for upto `1 hour`. The rate limit is applied even if the number of requests exceed `3600` _within_ the time window of `1 hour`.
+By default, Maintenance Mitra is rate-limited to 3600 requests per hour.  
+To upgrade, contact us for a new license key and update `conf/license.env`.
 
-To upgrade, contact us for a new license key. Edit `conf/license.env` with the new license key.
+---
