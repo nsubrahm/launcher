@@ -97,7 +97,28 @@ services:
       interval: 2s
       timeout: 30s
       retries: 3
-      start_period: 10s      
+      start_period: 10s
+
+  analytics:
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/analytics-service:${ANALYTICS_TAG:-latest}
+    depends_on:
+      persist:
+        condition: service_healthy
+    env_file:
+      - ../conf/analytics-service.env
+    deploy:
+      mode: replicated
+      replicas: ${REPLICAS:-1}      
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    networks:
+      mitra:
+        aliases:
+          - ${MACHINE_ID:-default}-analytics      
 
 networks:
   mitra:
