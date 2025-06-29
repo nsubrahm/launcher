@@ -85,5 +85,5 @@ docker compose --env-file launch/conf/gateway.env -f launch/stacks/gateway.yaml 
 | ---------- | --------------------------------------------------------------- |
 | Core       | mitra-core-broker, mitra-core-ksqldb, ...                       |
 | Base       | mitra-base-configs                                              |
-| Apps       | mitra-apps-httpin, mitra-apps-alarms, ...                       |
+| Apps       | mitra-apps-httpin, mitra-apps-alarms, mitra-apps-alerts, mitra-apps-collector, mitra-apps-persist, mitra-apps-analytics |
 | Gateway    | mitra-gateway-gateway                                           |

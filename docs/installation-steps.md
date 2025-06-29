@@ -67,7 +67,8 @@ docker compose --env-file launch/conf/base.env -f launch/stacks/base.yaml up -d
 docker compose --env-file launch/conf/gateway.env -f launch/stacks/gateway.yaml up -d
 ```
 
-For each machine, repeat configuration and launch for `init.yaml`, `apps.yaml`, etc.
+For each machine, repeat configuration and launch for `init.yaml`, `apps.yaml`, etc.  
+The `apps.yaml` stack includes analytics and other application services.
 
 ## Next Steps
 

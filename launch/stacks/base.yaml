@@ -4,6 +4,9 @@ services:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/configs:${CONFIGS_TAG:-latest}
     env_file:
       - ../conf/configs.env
+    deploy:
+      mode: replicated
+      replicas: ${REPLICAS:-1}      
     healthcheck:
       test: /work/health
       interval: 2s

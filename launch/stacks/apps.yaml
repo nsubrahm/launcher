@@ -69,10 +69,6 @@ services:
     deploy:
       mode: replicated
       replicas: ${REPLICAS:-1}
-    networks:
-      mitra:
-        aliases:
-          - ${MACHINE_ID:-default}-collector
     healthcheck:
       test: /work/health
       interval: 2s

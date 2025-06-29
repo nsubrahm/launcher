@@ -32,7 +32,7 @@ All containers should show "healthy" status after initialization.
 | ---------- | --------------------------------------------------------------- |
 | Core       | mitra-core-broker, mitra-core-ksqldb, mitra-core-tscaledb, ...  |
 | Base       | mitra-base-configs                                              |
-| Apps       | mitra-apps-httpin, mitra-apps-alarms, mitra-apps-alerts, ...    |
+| Apps       | mitra-apps-httpin, mitra-apps-alarms, mitra-apps-alerts, mitra-apps-collector, mitra-apps-persist, mitra-apps-analytics |
 | Gateway    | mitra-gateway-gateway                                           |
 
 ## Accessing the Web Interface

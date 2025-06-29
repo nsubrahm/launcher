@@ -51,6 +51,8 @@ docker compose --env-file launch/conf/base.env -f launch/stacks/base.yaml up -d
 docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml up -d
 ```
 
+The `apps.yaml` stack now includes the analytics service in addition to httpin, alarms, alerts, collector, and persist.
+
 Repeat for additional machines or components as needed.
 
 ## Next Steps
