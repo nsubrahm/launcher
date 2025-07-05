@@ -66,6 +66,8 @@ services:
         condition: service_healthy    
     env_file:
       - ../conf/${CONF_DIR}/collector.env
+    networks:
+      - mitra
     deploy:
       mode: replicated
       replicas: ${REPLICAS:-1}

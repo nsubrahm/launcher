@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-This guide provides solutions for common issues when launching and managing Maintenance Mitra with the new configuration management approach.
+This guide provides solutions for common issues when launching and managing Maintenance Mitra.
 
 - [Troubleshooting Guide](#troubleshooting-guide)
   - [Common Issues](#common-issues)

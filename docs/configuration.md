@@ -15,11 +15,12 @@ This guide explains how to manage configuration for Maintenance Mitra using temp
 
 ## Configuration Parameters
 
-The main configuration file (for automated rendering) is `config.json`. Example:
+The main configuration file is `config.json`. Example:
 
 ```json
 {
-  "PROJECT_NAME": "MITRA",
+  "PROJECT_NAME": "M001",
+  "SCHEMA_NAME": "org1",
   "MACHINE_ID_CAPS": "M001",
   "MACHINE_ID": "m001",
   "NUM_PARAMETERS": 5,
@@ -29,33 +30,26 @@ The main configuration file (for automated rendering) is `config.json`. Example:
 }
 ```
 
-| Parameter         | Description                                                                |
-| ----------------- | -------------------------------------------------------------------------- |
-| `PROJECT_NAME`    | Project or deployment name.                                                |
-| `MACHINE_ID_CAPS` | Machine ID in upper case (for app IDs, etc).                              |
-| `MACHINE_ID`      | Machine ID in lower case (for topic names, etc).                           |
-| `NUM_PARAMETERS`  | Number of machine parameters.                                              |
-| `NUM_MACHINES`    | Number of machines (for multi-machine setups).                             |
-| `templateDir`     | Directory containing template files.                                       |
-| `outputDir`       | Directory for generated `.env` files.                                      |
+| Parameter         | Description                                      |
+| ----------------- | ------------------------------------------------ |
+| `PROJECT_NAME`    | Project or deployment name.                      |
+| `SCHEMA_NAME`     | Database schema name.                            |
+| `MACHINE_ID_CAPS` | Machine ID in upper case (for app IDs, etc).     |
+| `MACHINE_ID`      | Machine ID in lower case (for topic names, etc). |
+| `NUM_PARAMETERS`  | Number of machine parameters.                    |
+| `NUM_MACHINES`    | Number of machines (for multi-machine setups).   |
+| `templateDir`     | Directory containing template files.             |
+| `outputDir`       | Directory for generated `.env` files.            |
 
 ## Generating Environment Files
 
 To generate `.env` files from templates:
 
 ```bash
-mkdir -p launch/conf
-python scripts/main.py
+mkdir -p launch/conf/general
+python scripts/main.py -f config.json
+mkdir -p launch/conf/m001
+python scripts/main.py -f config.json -m m001
 ```
-
-This will read `config.json` and render all templates in `templateDir` to `.env` files in `outputDir`.
 
 Edit the templates or `config.json` as needed for your deployment.
-To generate the environment variable files:
-
-```bash
-mkdir -p launch/conf
-python scripts/main.py
-```
-
-This script reads the `config.json` file and generates the necessary environment files in the `outputDir` specified in the configuration.

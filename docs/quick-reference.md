@@ -40,20 +40,33 @@ wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/
 tar -xzf launcher-v${MTMT_VERSION}.tar.gz
 ```
 
+
 ## Configuration Generation
 
 ```bash
-mkdir -p launch/conf
-python scripts/main.py
+mkdir -p launch/conf/general
+python scripts/main.py -f config.json
+mkdir -p launch/conf/m001
+python scripts/main.py -f config.json -m m001
 ```
+
 
 ## Launching Stacks
 
 ```bash
-docker compose --env-file launch/conf/core.env -f launch/stacks/core.yaml up -d
-docker compose --env-file launch/conf/base.env -f launch/stacks/base.yaml up -d
-docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml up -d
-docker compose --env-file launch/conf/gateway.env -f launch/stacks/gateway.yaml up -d
+export CONF_DIR=general
+source launch/conf/${CONF_DIR}/core.env && docker compose --env-file launch/conf/${CONF_DIR}/core.env -f launch/stacks/core.yaml up -d
+source launch/conf/${CONF_DIR}/machines.env && docker compose --env-file launch/conf/${CONF_DIR}/machines.env -f launch/stacks/machines.yaml up -d
+source launch/conf/${CONF_DIR}/base.env && docker compose --env-file launch/conf/${CONF_DIR}/base.env -f launch/stacks/base.yaml up -d
+source launch/conf/${CONF_DIR}/gateway.env && docker compose --env-file launch/conf/${CONF_DIR}/gateway.env -f launch/stacks/gateway.yaml up -d
+```
+
+For machine-specific stacks:
+
+```bash
+export CONF_DIR=m001
+source launch/conf/${CONF_DIR}/init.env && docker compose --env-file launch/conf/${CONF_DIR}/init.env -f launch/stacks/init.yaml up -d
+source launch/conf/${CONF_DIR}/apps.env && docker compose --env-file launch/conf/${CONF_DIR}/apps.env -f launch/stacks/apps.yaml up -d
 ```
 
 ## Docker Commands

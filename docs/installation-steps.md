@@ -1,104 +1,80 @@
 # Installation Steps
 
-Step-by-step instructions for installing and launching Maintenance Mitra using the new configuration management approach.
+Step-by-step instructions for installing and launching Maintenance Mitra.
 
 - [Installation Steps](#installation-steps)
-  - [Login to Container Registry](#login-to-container-registry)
-  - [Download Application](#download-application)
-  - [Configuration Management](#configuration-management)
-  - [Launching Stacks](#launching-stacks)
+  - [1. Clone the repository](#1-clone-the-repository)
+  - [2. Generate configuration](#2-generate-configuration)
+  - [3. Launch the application](#3-launch-the-application)
+  - [4. Batch set-up (optional)](#4-batch-set-up-optional)
+  - [5. License Management](#5-license-management)
   - [Next Steps](#next-steps)
 
-## Login to Container Registry
-
-Authenticate with `ghcr.io` to pull required images.
-
-**Linux:**
-```bash
-export CR_PAT=<token>
-echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
-```
-
-**Windows PowerShell:**
-```powershell
-$env:CR_PAT = "<token>"
-$env:CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
-```
-
-## Download Application
-
-Download and extract the launcher package.
-
-**Linux:**
-```bash
-mkdir launcher && cd launcher
-export MTMT_VERSION=0.0.0
-wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher-v${MTMT_VERSION}.tar.gz
-tar -xzf launcher-v${MTMT_VERSION}.tar.gz
-```
-
-**Windows PowerShell:**
-```powershell
-$env:MTMT_VERSION = "0.0.0"
-wget -q https://github.com/nsubrahm/launcher/releases/download/v${MTMT_VERSION}/launcher-v${MTMT_VERSION}.tar.gz
-tar -xzf launcher-v${MTMT_VERSION}.tar.gz
-```
-
-## Configuration Management
-
-1. Edit template files in `launch/templates/` as needed (e.g., set `MACHINE_ID`, `SCHEMA_NAME`, etc).
-2. Render templates to `.env` files in `launch/conf/` (manually or using a script):
+## 1. Clone the repository
 
 ```bash
-mkdir -p launch/conf
-python scripts/main.py
+git clone https://github.com/nsubrahm/launcher
+cd launcher
 ```
 
-See [Configuration Guide](configuration.md) for details.
+## 2. Generate configuration
 
-## Launching Stacks
-
-Start each stack using its `.env` and YAML file:
+Edit `config.json` as needed.  
+Generate general configuration:
 
 ```bash
-docker compose --env-file launch/conf/core.env -f launch/stacks/core.yaml up -d
-docker compose --env-file launch/conf/machines.env -f launch/stacks/machines.yaml up -d
-docker compose --env-file launch/conf/base.env -f launch/stacks/base.yaml up -d
-docker compose --env-file launch/conf/gateway.env -f launch/stacks/gateway.yaml up -d
+mkdir -p launch/conf/general
+python scripts/main.py -f config.json
 ```
 
-For each machine, repeat configuration and launch for `init.yaml`, `apps.yaml`, etc.  
-The `apps.yaml` stack includes analytics and other application services.
+Generate configuration for a machine:
+
+```bash
+mkdir -p launch/conf/m001
+python scripts/main.py -f config.json -m m001
+```
+
+## 3. Launch the application
+
+Launch infrastructure (run once):
+
+```bash
+export CONF_DIR=general
+source launch/conf/${CONF_DIR}/core.env && docker compose --env-file launch/conf/${CONF_DIR}/core.env -f launch/stacks/core.yaml up -d
+source launch/conf/${CONF_DIR}/machines.env && docker compose --env-file launch/conf/${CONF_DIR}/machines.env -f launch/stacks/machines.yaml up -d
+source launch/conf/${CONF_DIR}/base.env && docker compose --env-file launch/conf/${CONF_DIR}/base.env -f launch/stacks/base.yaml up -d
+source launch/conf/${CONF_DIR}/gateway.env && docker compose --env-file launch/conf/${CONF_DIR}/gateway.env -f launch/stacks/gateway.yaml up -d
+```
+
+Launch applications for a machine:
+
+```bash
+export CONF_DIR=m001
+source launch/conf/${CONF_DIR}/init.env && docker compose --env-file launch/conf/${CONF_DIR}/init.env -f launch/stacks/init.yaml up -d
+source launch/conf/${CONF_DIR}/apps.env && docker compose --env-file launch/conf/${CONF_DIR}/apps.env -f launch/stacks/apps.yaml up -d
+```
+
+## 4. Batch set-up (optional)
+
+Create logs folder:
+
+```bash
+mkdir -p launch/batch/logs
+```
+
+Add cron entry for ML jobs:
+
+```bash
+0 */8 * * * $HOME/launcher/launch/batch/mljobs.sh m001 stable
+```
+
+## 5. License Management
+
+The default license is in `conf/license.env`.  
+To upgrade, replace the key in this file.
 
 ## Next Steps
 
 - [Verify your installation](verification.md)
 - [Customize configuration](configuration.md)
 - [Troubleshoot issues](troubleshooting.md)
-This is a one-time activity.
-
-```bash
-source launch/conf/core.env && docker compose --env-file launch/conf/core.env -f launch/stacks/core.yaml up -d
-source launch/conf/machines.env && docker compose --env-file launch/conf/machines.env -f launch/stacks/machines.yaml up -d
-source launch/conf/base.env && docker compose --env-file launch/conf/base.env -f launch/stacks/base.yaml up -d
-source launch/conf/gateway.env && docker compose --env-file launch/conf/gateway.env -f launch/stacks/gateway.yaml up -d
-```
-
-### Launch Applications
-
-This step needs to be run as many times as machines are added. Before adding a new machine, generate configuration as described in [Configuration](configuration.md).
-
-```bash
-source launch/conf/init.env && docker compose --env-file launch/conf/init.env -f launch/stacks/init.yaml up -d
-source launch/conf/apps.env && docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml up -d
-source launch/conf/db.env && docker compose --env-file launch/conf/db.env -f launch/stacks/db.yaml up -d
-```
-
-Verify all containers are running with `docker ps`.
-
-## Next Steps
-
-After successful installation:
-- [Verify your installation](verification.md)
-- [Configure the system](configuration.md)
-- [Troubleshoot common issues](troubleshooting.md)

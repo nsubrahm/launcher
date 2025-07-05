@@ -1,10 +1,9 @@
 # Installation Verification
 
-This guide helps you verify that your Maintenance Mitra deployment (using launch/configuration management) is running correctly.
+This guide helps you verify that your Maintenance Mitra deployment is running correctly.
 
 - [Installation Verification](#installation-verification)
   - [Check Container Status](#check-container-status)
-  - [Expected Containers](#expected-containers)
   - [Accessing the Web Interface](#accessing-the-web-interface)
   - [Health Checks](#health-checks)
   - [Troubleshooting](#troubleshooting)
@@ -25,15 +24,6 @@ You should see containers with names like:
 - `mitra-gateway`
 
 All containers should show "healthy" status after initialization.
-
-## Expected Containers
-
-| Stack      | Example Containers                                               |
-| ---------- | --------------------------------------------------------------- |
-| Core       | mitra-core-broker, mitra-core-ksqldb, mitra-core-tscaledb, ...  |
-| Base       | mitra-base-configs                                              |
-| Apps       | mitra-apps-httpin, mitra-apps-alarms, mitra-apps-alerts, mitra-apps-collector, mitra-apps-persist, mitra-apps-analytics |
-| Gateway    | mitra-gateway-gateway                                           |
 
 ## Accessing the Web Interface
 
@@ -68,15 +58,3 @@ docker inspect <container-name> | grep Health
 - Configure machine parameters and limits.
 - Begin monitoring your equipment.
 - See [Configuration Guide](configuration.md) for details.
-   - Verify gateway container is running
-   - Check if port 80 is accessible and not blocked by firewall
-   - Check gateway logs for any routing issues
-
-## Next Steps
-
-After verifying your installation:
-- Configure user accounts
-- Set up machine parameters
-- Begin monitoring your equipment
-
-For configuration details, see the [Configuration Guide](configuration.md).
