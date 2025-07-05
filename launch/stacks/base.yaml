@@ -2,7 +2,7 @@ services:
   configs:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/configs:${CONFIGS_TAG:-latest}
     env_file:
-      - ../conf/configs.env
+      - ../conf/generalconfigs.env
     deploy:
       mode: replicated
       replicas: ${REPLICAS:-1}      

@@ -3,7 +3,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-topics
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/kafka-tools:${KAFKA_TOOLS_TAG:-latest}
     env_file:
-      - ../conf/machines-master.env
+      - ../conf/general/machines-master.env
     networks:
       - mitra
 
@@ -14,7 +14,7 @@ services:
       topics:
         condition: service_completed_successfully
     env_file:
-      - ../conf/queries-master.env
+      - ../conf/general/queries-master.env
     networks:
       - mitra
 
