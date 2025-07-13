@@ -4,54 +4,36 @@ Instructions for stopping and removing Maintenance Mitra components managed via 
 
 - [Clean-up Guide](#clean-up-guide)
   - [Stopping Services](#stopping-services)
-  - [Removing Containers](#removing-containers)
-  - [Full Cleanup](#full-cleanup)
-  - [Removing Docker Images](#removing-docker-images)
   - [Verification](#verification)
 
 ## Stopping Services
 
-Stop services for each stack:
+1. Stop all running applications.
 
 ```bash
-docker compose --env-file launch/conf/gateway.env -f launch/stacks/gateway.yaml stop
-docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml stop
-docker compose --env-file launch/conf/base.env -f launch/stacks/base.yaml stop
-docker compose --env-file launch/conf/core.env -f launch/stacks/core.yaml stop
+for i in $(seq -w 1 ${NUM_MACHINES}); do
+  export CONF_DIR=m0$i
+  source launch/conf/${CONF_DIR}/init.env && docker compose --env-file launch/conf/${CONF_DIR}/init.env -f launch/stacks/init.yaml down
+  source launch/conf/${CONF_DIR}/apps.env && docker compose --env-file launch/conf/${CONF_DIR}/apps.env -f launch/stacks/apps.yaml down
+done
 ```
 
-## Removing Containers
-
-Remove containers (preserving volumes):
+2. Shut-down infra-structure.
 
 ```bash
-docker compose --env-file launch/conf/gateway.env -f launch/stacks/gateway.yaml down
-docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml down
-docker compose --env-file launch/conf/base.env -f launch/stacks/base.yaml down
-docker compose --env-file launch/conf/core.env -f launch/stacks/core.yaml down
+export CONF_DIR=general
+source launch/conf/${CONF_DIR}/core.env && docker compose --env-file launch/conf/${CONF_DIR}/core.env -f launch/stacks/core.yaml down
+source launch/conf/${CONF_DIR}/machines.env && docker compose --env-file launch/conf/${CONF_DIR}/machines.env -f launch/stacks/machines.yaml down
+source launch/conf/${CONF_DIR}/base.env && docker compose --env-file launch/conf/${CONF_DIR}/base.env -f launch/stacks/base.yaml down
+source launch/conf/${CONF_DIR}/gateway.env && docker compose --env-file launch/conf/${CONF_DIR}/gateway.env -f launch/stacks/gateway.yaml down
+# Remove network
+docker network rm mitra
 ```
 
-## Full Cleanup
-
-Remove all containers, networks, and volumes:
+3. Remove all container images.
 
 ```bash
-docker compose --env-file launch/conf/gateway.env -f launch/stacks/gateway.yaml down -v
-docker compose --env-file launch/conf/apps.env -f launch/stacks/apps.yaml down -v
-docker compose --env-file launch/conf/base.env -f launch/stacks/base.yaml down -v
-docker compose --env-file launch/conf/core.env -f launch/stacks/core.yaml down -v
-
-docker volume prune -f
-docker network prune -f
-```
-
-## Removing Docker Images
-
-List and remove images:
-
-```bash
-docker images | grep 'nsubrahm\|confluentinc'
-docker rmi <image-id>
+docker image prune -a -f
 ```
 
 ## Verification

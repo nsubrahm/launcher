@@ -12,8 +12,6 @@ Maintenance Mitra is a modular, containerized application for real-time machine 
     - [4. Batch set-up](#4-batch-set-up)
     - [5. License Management](#5-license-management)
   - [Usage](#usage)
-  - [Troubleshooting \& Support](#troubleshooting--support)
-  - [License](#license)
 
 ## Overview
 
@@ -58,7 +56,7 @@ cd launcher
 
 ```bash
 mkdir -p launch/conf/general
-python scripts/main.py -f config.json
+python scripts/main.py -f configs/config.json
 ```
 
 3. Generate configuration for a machine. To edit defaults in `config.json`, see [configuration](./docs/configuration.md).
@@ -66,7 +64,7 @@ python scripts/main.py -f config.json
 ```bash
 mkdir -p launch/conf/m001
 tools/config-gen.sh m001
-python scripts/main.py -f m001.json -m m001
+python scripts/main.py -f configs/m001.json -m m001
 ```
 
 ### 3. Launching the Application
@@ -111,21 +109,9 @@ The application uses a license key for rate-limiting and feature control.
 
 ## Usage
 
-- **Data Ingestion:** Send POST requests to `/data` endpoint.
+- **Data Ingestion:** Send POST requests to `/data` endpoint. See [payload structure](./docs/payload.md) for more details.
 - **Dashboard:** Access `/ui` in your browser.
-- **Limits Configuration:** Use `/limits` endpoint for parameter limits.
+- Access the dashboard at `http://localhost:80/ui`. The default credentials are `admin/admin`.
 
 See `docs/` for payload formats and advanced usage.
 
-## Troubleshooting & Support
-
-- Check container logs for errors: `docker compose logs <service>`
-- Ensure all `.env` files are present and correctly rendered.
-- For further help, see `docs/troubleshooting.md`.
-
-## License
-
-By default, Maintenance Mitra is rate-limited to 3600 requests per hour.  
-To upgrade, contact us for a new license key and update `conf/license.env`.
-
----
