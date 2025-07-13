@@ -2,7 +2,7 @@ services:
   httpin:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/http-inputs:${HTTP_INPUTS_TAG:-latest}
     env_file:
-      - ../conf/httpInputs.env
+      - ../conf/${CONF_DIR}/httpInputs.env
     deploy:
       mode: replicated
       replicas: ${REPLICAS:-1}      
@@ -23,7 +23,7 @@ services:
       httpin:
         condition: service_healthy
     env_file:
-      - ../conf/alarms.env
+      - ../conf/${CONF_DIR}/alarms.env
     networks:
       - mitra
     deploy:
@@ -42,7 +42,7 @@ services:
       httpin:
         condition: service_healthy    
     env_file:
-      - ../conf/alerts.env
+      - ../conf/${CONF_DIR}/alerts.env
     deploy:
       mode: replicated
       replicas: ${REPLICAS:-1}
@@ -65,20 +65,20 @@ services:
       alerts:
         condition: service_healthy    
     env_file:
-      - ../conf/collector.env
+      - ../conf/${CONF_DIR}/collector.env
     deploy:
       mode: replicated
       replicas: ${REPLICAS:-1}
-    networks:
-      mitra:
-        aliases:
-          - ${MACHINE_ID:-default}-collector
     healthcheck:
       test: /work/health
       interval: 2s
       timeout: 30s
       retries: 3
       start_period: 10s
+    networks:
+      mitra:
+        aliases:
+          - ${MACHINE_ID:-default}-collector
 
   persist:
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/persist:${PERSIST_TAG:-latest}
@@ -86,7 +86,7 @@ services:
       collector:
         condition: service_healthy
     env_file:
-      - ../conf/persist.env
+      - ../conf/${CONF_DIR}/persist.env
     deploy:
       mode: replicated
       replicas: ${REPLICAS:-1}
@@ -97,7 +97,28 @@ services:
       interval: 2s
       timeout: 30s
       retries: 3
-      start_period: 10s      
+      start_period: 10s
+
+  analytics:
+    image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/analytics-service:${ANALYTICS_TAG:-latest}
+    depends_on:
+      persist:
+        condition: service_healthy
+    env_file:
+      - ../conf/${CONF_DIR}/analytics-service.env
+    deploy:
+      mode: replicated
+      replicas: ${REPLICAS:-1}      
+    healthcheck:
+      test: /work/health
+      interval: 2s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
+    networks:
+      mitra:
+        aliases:
+          - ${MACHINE_ID:-default}-analytics      
 
 networks:
   mitra:

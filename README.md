@@ -1,10 +1,21 @@
-# Maintenance Mitra: Launch & Configuration Management
+# Introduction
 
 Maintenance Mitra is a modular, containerized application for real-time machine data monitoring, alerting, and dashboarding. The system is orchestrated using Docker Compose, with configuration managed via environment templates and stack files.
 
+- [Introduction](#introduction)
+  - [Overview](#overview)
+  - [Directory Structure](#directory-structure)
+  - [Installation](#installation)
+    - [1. Pre-requisites](#1-pre-requisites)
+    - [2. Configuration Management](#2-configuration-management)
+    - [3. Launching the Application](#3-launching-the-application)
+    - [4. Batch set-up](#4-batch-set-up)
+    - [5. License Management](#5-license-management)
+  - [Usage](#usage)
+
 ## Overview
 
-Maintenance Mitra is designed for rapid deployment and flexible configuration. The launch process is managed through a set of templates and configuration files, allowing you to tailor deployments for different environments and machine setups.
+The launch process is managed through a set of templates and configuration files, allowing you to tailor deployments for different environments and machine setups.
 
 **Key Features:**
 - Modular Docker Compose stacks for core services, machine-specific apps, and supporting infrastructure.
@@ -15,50 +26,80 @@ Maintenance Mitra is designed for rapid deployment and flexible configuration. T
 ## Directory Structure
 
 - `launch/templates/` – Environment variable templates (`.tmpl`) for all services.
-- `launch/conf/` – Generated `.env` files for each service and stack.
 - `launch/stacks/` – Docker Compose YAML files for each stack (core, base, apps, etc).
 - `docs/` – Additional documentation.
 
-## Installation & Launch
+## Installation
 
 ### 1. Pre-requisites
 
-- 64-bit Windows or Linux server with at least 1 CPU core and 4GB RAM.
+- 64-bit Windows or Linux server with at least 1 CPU core and 8GB RAM.
 - Docker and Docker Compose installed.
 - Internet access during installation.
 
+> The commands in this page is for a Linux machine.
+
 ### 2. Configuration Management
 
-All configuration is managed via environment variable files. Templates in `launch/templates/` are rendered (manually or via scripts) to produce `.env` files in `launch/conf/`. These `.env` files are referenced by the Docker Compose stack files in `launch/stacks/`.
+All configuration is managed via environment variable files. Templates in `launch/templates/` are rendered via scripts to produce `.env` files in `launch/conf/`. These `.env` files are referenced by the Docker Compose stack files in `launch/stacks/`. There are two categories of environment variables - general and machine. The general environment variables should be generated once to launch the environment. The machine specific environment variables may be generated for as many machines as required.
 
-**Typical configuration steps:**
-1. Copy and customize the relevant `.tmpl` files in `launch/templates/` for your deployment (e.g., set `MACHINE_ID`, `SCHEMA_NAME`, etc).
-2. Render templates to `.env` files in `launch/conf/` (can be done manually or with a script).
-3. Review and adjust stack YAML files in `launch/stacks/` if needed.
+To generate configuration, run the following steps.
+
+1. Clone the repository.
+
+```bash
+git clone https://github.com/nsubrahm/launcher
+cd launcher
+```
+
+2. Generate general configuration. To edit defaults in `config.json`, see [configuration](./docs/configuration.md).
+
+```bash
+mkdir -p launch/conf/general
+python scripts/main.py -f configs/config.json
+```
+
+3. Generate configuration for a machine. To edit defaults in `config.json`, see [configuration](./docs/configuration.md).
+
+```bash
+mkdir -p launch/conf/m001
+tools/config-gen.sh m001
+python scripts/main.py -f configs/m001.json -m m001
+```
 
 ### 3. Launching the Application
 
-Each stack can be launched independently or in sequence, depending on your use case.
+1. Launch the infra-structure. This step is to be run once.
 
-**Example:**
-```sh
-cd launch/stacks
-docker compose -f core.yaml up -d
-docker compose -f base.yaml up -d
-docker compose -f apps.yaml up -d
+```bash
+export CONF_DIR=general
+source launch/conf/${CONF_DIR}/core.env && docker compose --env-file launch/conf/${CONF_DIR}/core.env -f launch/stacks/core.yaml up -d
+source launch/conf/${CONF_DIR}/machines.env && docker compose --env-file launch/conf/${CONF_DIR}/machines.env -f launch/stacks/machines.yaml up -d
+source launch/conf/${CONF_DIR}/base.env && docker compose --env-file launch/conf/${CONF_DIR}/base.env -f launch/stacks/base.yaml up -d
+source launch/conf/${CONF_DIR}/gateway.env && docker compose --env-file launch/conf/${CONF_DIR}/gateway.env -f launch/stacks/gateway.yaml up -d
 ```
-- `core.yaml` – Core infrastructure (Kafka, KSQL, DB, etc).
-- `base.yaml` – Base configuration service.
-- `apps.yaml` – Machine-specific application stack.
 
-**For multi-machine setups:**  
-Repeat the configuration and launch steps for each machine, customizing the templates and `.env` files as needed.
+2. Launch applications for a machine. This step maybe run as many times as required. Ensure that the configuration was generated for the specfied machine. See [Configuration management](#2-configuration-management) above.
 
-### 4. Customization
+```bash
+export CONF_DIR=m001
+source launch/conf/${CONF_DIR}/init.env && docker compose --env-file launch/conf/${CONF_DIR}/init.env -f launch/stacks/init.yaml up -d
+source launch/conf/${CONF_DIR}/apps.env && docker compose --env-file launch/conf/${CONF_DIR}/apps.env -f launch/stacks/apps.yaml up -d
+```
 
-- To add or modify machines, adjust the relevant templates and regenerate `.env` files.
-- To change partitioning, replication, or other Kafka/DB settings, edit the corresponding `.tmpl` and re-render.
-- For advanced scenarios, compose or extend stack YAML files as required.
+### 4. Batch set-up
+
+1. Set-up logs folder.
+
+```bash
+mkdir -p launch/batch/logs
+```
+
+2. Add the following `cron` entry for as many machines that were launched.
+
+```bash
+0 */8 * * * $HOME/launcher/launch/batch/mljobs.sh m001 stable
+```
 
 ### 5. License Management
 
@@ -68,21 +109,9 @@ The application uses a license key for rate-limiting and feature control.
 
 ## Usage
 
-- **Data Ingestion:** Send POST requests to `/data` endpoint.
+- **Data Ingestion:** Send POST requests to `/data` endpoint. See [payload structure](./docs/payload.md) for more details.
 - **Dashboard:** Access `/ui` in your browser.
-- **Limits Configuration:** Use `/limits` endpoint for parameter limits.
+- Access the dashboard at `http://localhost:80/ui`. The default credentials are `admin/admin`.
 
 See `docs/` for payload formats and advanced usage.
 
-## Troubleshooting & Support
-
-- Check container logs for errors: `docker compose logs <service>`
-- Ensure all `.env` files are present and correctly rendered.
-- For further help, see `docs/troubleshooting.md`.
-
-## License
-
-By default, Maintenance Mitra is rate-limited to 3600 requests per hour.  
-To upgrade, contact us for a new license key and update `conf/license.env`.
-
----

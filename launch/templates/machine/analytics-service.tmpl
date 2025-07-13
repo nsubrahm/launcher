@@ -1,15 +1,12 @@
-# Kafka configuration
-KAFKA_BOOTSTRAP_SERVERS=broker:29092
-
 # Database
-TSDB_HOST=tscaledb
+TSDB_HOST=bouncer
 TSDB_PORT=5432
 TSDB_DB=mitra
-CONDITION_TABLE_SCHEMA=org1
-CONDITION_TABLE_NAME=m001_condition
+SHIFT_SUMMARY_SCHEMA={{ SCHEMA_NAME }}
+SHIFT_SUMMARY_TABLE={{ MACHINE_ID }}_shift_analytics
 
 # Application
-MACHINE_ID=m001
+MACHINE_ID={{ MACHINE_ID }}
 TZ="Asia/Kolkata"
 
 # Quarkus

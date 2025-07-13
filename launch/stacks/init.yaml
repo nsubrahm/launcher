@@ -3,7 +3,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-topics
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/kafka-tools:${KAFKA_TOOLS_TAG:-latest}
     env_file:
-      - ../conf/topics.env
+      - ../conf/${CONF_DIR}/topics.env
     networks:
       - mitra
 
@@ -14,7 +14,7 @@ services:
       topics:
         condition: service_completed_successfully
     env_file:
-      - ../conf/queries.env
+      - ../conf/${CONF_DIR}/queries.env
     networks:
       - mitra
 
@@ -22,7 +22,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-tables
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/tables:${TABLES_TAG:-latest}
     env_file:
-      - ../conf/tables.env
+      - ../conf/${CONF_DIR}/tables.env
     networks:
       - mitra
 
