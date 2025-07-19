@@ -49,7 +49,6 @@ services:
       - mitra
 
   bouncer:
-    container_name: ${COMPOSE_PROJECT_NAME}-bouncer
     image: ${CONTAINER_REGISTRY}/${CONTAINER_REPOSITORY}/bouncer:${BOUNCER_TAG:-latest}
     depends_on:
       tscaledb:
