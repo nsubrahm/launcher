@@ -4,13 +4,13 @@ Maintenance Mitra is a modular, containerized application for real-time machine 
 
 - [Introduction](#introduction)
   - [Overview](#overview)
-  - [Directory Structure](#directory-structure)
   - [Installation](#installation)
     - [1. Pre-requisites](#1-pre-requisites)
     - [2. Configuration Management](#2-configuration-management)
-    - [3. Launching the Application](#3-launching-the-application)
+    - [3. Launch](#3-launch)
     - [4. Batch set-up](#4-batch-set-up)
     - [5. License Management](#5-license-management)
+    - [6. Un-installation](#6-un-installation)
   - [Usage](#usage)
 
 ## Overview
@@ -23,17 +23,14 @@ The launch process is managed through a set of templates and configuration files
 - Easy customization for machine IDs, database schemas, partitioning, and more.
 - Supports both quick-start and advanced, multi-machine scenarios.
 
-## Directory Structure
-
-- `launch/templates/` – Environment variable templates (`.tmpl`) for all services.
-- `launch/stacks/` – Docker Compose YAML files for each stack (core, base, apps, etc).
-- `docs/` – Additional documentation.
-
 ## Installation
 
 ### 1. Pre-requisites
 
-- 64-bit Windows or Linux server with at least 1 CPU core and 8GB RAM.
+- 64-bit Windows or Linux server with 
+  - 4 CPU core and 16 GiB RAM.
+  - Root volume of 10 GiB.
+  - Additional volume of 40 GiB.
 - Docker and Docker Compose installed.
 - Internet access during installation.
 
@@ -67,7 +64,7 @@ tools/config-gen.sh m001
 python scripts/main.py -f configs/m001.json -m m001
 ```
 
-### 3. Launching the Application
+### 3. Launch
 
 1. Launch the infra-structure. This step is to be run once.
 
@@ -79,7 +76,7 @@ source launch/conf/${CONF_DIR}/base.env && docker compose --env-file launch/conf
 source launch/conf/${CONF_DIR}/gateway.env && docker compose --env-file launch/conf/${CONF_DIR}/gateway.env -f launch/stacks/gateway.yaml up -d
 ```
 
-2. Launch applications for a machine. This step maybe run as many times as required. Ensure that the configuration was generated for the specfied machine. See [Configuration management](#2-configuration-management) above.
+2. Launch applications for a machine. This step maybe run as many times as machines are to be added. Ensure that the configuration was generated for the specfied machine. See [Configuration management](#2-configuration-management) above.
 
 ```bash
 export CONF_DIR=m001
@@ -106,6 +103,10 @@ mkdir -p launch/batch/logs
 The application uses a license key for rate-limiting and feature control.  
 - The default license is in `conf/license.env`.
 - To upgrade, replace the key in this file.
+
+### 6. Un-installation
+
+See [clean-up](./docs/clean-up.md) for steps to un-install.
 
 ## Usage
 

@@ -18,6 +18,14 @@ for i in $(seq -w 1 ${NUM_MACHINES}); do
 done
 ```
 
+To remove applications of a single machine, set `CONF_DIR` to a machine Id e.g, `m004` and run the following commands.
+
+```bash
+export CONF_DIR=m004
+source launch/conf/${CONF_DIR}/init.env && docker compose --env-file launch/conf/${CONF_DIR}/init.env -f launch/stacks/init.yaml down
+source launch/conf/${CONF_DIR}/apps.env && docker compose --env-file launch/conf/${CONF_DIR}/apps.env -f launch/stacks/apps.yaml down
+```
+
 2. Shut-down infra-structure.
 
 ```bash
